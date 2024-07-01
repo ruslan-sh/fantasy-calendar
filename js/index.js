@@ -123,7 +123,7 @@ function calculateDate(currentDate, daysToAdd) {
     }
 
     const months = props.calendar.months;
-    let newMonth = currentDate.month;
+    let newMonth = months[0].name;
     while (newDay > getMonthDays(newMonth)) {
         newDay -= getMonthDays(newMonth);
         newMonth = months[months.findIndex(m => m.name === newMonth) + 1].name;
