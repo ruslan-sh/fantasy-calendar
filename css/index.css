@@ -1,0 +1,27 @@
+h1, h2, h3 {
+    font-family: Verdana, serif;
+}
+table, th, td {
+    border: 1px solid;
+}
+
+th {
+    font-family: Verdana, serif;
+}
+
+td {
+    font-family: Georgia, sans-serif;
+}
+
+.full-moon::after {
+    color: #FBC02D;
+    content: "⚫︎";
+}
+
+.current-day {
+    border: 2px solid #e22;
+}
+
+.equinox::after {
+    content: "⊖︎";
+}
