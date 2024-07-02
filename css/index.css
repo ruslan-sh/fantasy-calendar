@@ -1,27 +1,55 @@
-h1, h2, h3 {
-    font-family: Verdana, serif;
-}
-table, th, td {
-    border: 1px solid;
+body {
+  font-family: "Almendra", cursive;
+  background-color: #fff3e0;
 }
 
-th {
-    font-family: Verdana, serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  font-family: "MedievalSharp", serif;
 }
 
-td {
-    font-family: Georgia, sans-serif;
+h1 {
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  margin: 16px 0;
+}
+
+.sub-header {
+  margin: -16px 0 8px 0;
+  font-style: italic;
 }
 
 .full-moon::after {
-    color: #FBC02D;
-    content: "⚫︎";
+  content: "◦";
+}
+
+.new-moon::after {
+  content: "●";
 }
 
 .current-day {
-    border: 2px solid #e22;
+  border: 2px solid #e22;
 }
 
 .equinox::after {
-    content: "⊖︎";
+  content: "⊖︎";
+}
+
+.months-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.months-container > div {
+  flex-basis: 1;
+  margin: 10px;
 }
