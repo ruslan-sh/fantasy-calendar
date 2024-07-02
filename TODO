@@ -1,8 +1,13 @@
 -   Add astronomical events
 -   Dark Mode
--   Print Mode
--   Calendar Configuration
+-   Render Configuration (hide current day, hide events)
+-   Foldable footer
+-   Calendar Properties
+-   Date in URL
+-   Store configuration in local storage
 
 # Done
++-   Print Mode
++-   Add moon events
 +-   Add days calculator
 +-   Style

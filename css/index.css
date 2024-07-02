@@ -1,5 +1,6 @@
 body {
   font-family: "Almendra", cursive;
+  color: #212121;
   background-color: #fff3e0;
 }
 
@@ -28,11 +29,21 @@ h2 {
 }
 
 .full-moon::after {
-  content: "◦";
+  content: "○";
 }
 
 .new-moon::after {
   content: "●";
+}
+
+.half-waxing::after {
+  font-size: 0.7em;
+  content: "◐";
+}
+
+.half-waning::after {
+  font-size: 0.7em;
+  content: "◑";
 }
 
 .current-day {
@@ -46,10 +57,73 @@ h2 {
 .months-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: flex-start;
+  padding: 0 16px;
 }
 
 .months-container > div {
   flex-basis: 1;
-  margin: 10px;
+  margin: 0 16px;
+}
+
+#inputContainer {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+#inputContainer > div {
+  margin: 8px;
+}
+
+#inputContainer .hide-input {
+  opacity: 0;
+}
+
+#inputContainer .hide-input::after {
+  content: "visibility_off";
+}
+
+#inputContainer:hover .hide-input {
+  opacity: 1;
+}
+
+#inputContainer.hidden > div {
+  display: none;
+}
+
+#inputContainer.hidden .hide-input::after {
+  content: "tune";
+}
+
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px; /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: "liga";
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
