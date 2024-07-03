@@ -1,19 +1,30 @@
+import { props } from "./props.js";
+import { calculateDate, getMonthMoonCycle, isLeapYear } from "./logic.js";
+
 function renderMoonCycle(moonCycle, dayId, element) {
     for (const [fullMoon, halfWaning, newMoon, halfWaxing] of moonCycle) {
         if (dayId === fullMoon) {
             element.classList.add("full-moon");
+            break;
         } else if (dayId === halfWaning) {
             element.classList.add("half-waning");
+            break;
         } else if (dayId === newMoon) {
             element.classList.add("new-moon");
+            break;
         } else if (dayId === halfWaxing) {
             element.classList.add("half-waxing");
+            break;
         }
     }
+
+    const moonSymbol = document.createElement("span");
+    moonSymbol.classList.add("moon-symbol");
+    element.appendChild(moonSymbol);
 }
 
 function renderMonth(yearId, monthName, currentDay) {
-    function calculateFirstDay(yearId, monthName) {
+    function calculateFirstDay(/*yearId, monthName*/) {
         return 0; // Assuming the first day of every month is the first day of the week
     }
 
@@ -57,8 +68,7 @@ function renderMonth(yearId, monthName, currentDay) {
 
     const month = props.calendar.months.find((m) => m.name === monthName);
     if (!month) {
-        console.error("Month not found");
-        return;
+        throw "Month not found";
     }
 
     const moonCycle = getMonthMoonCycle(yearId, monthName);
@@ -118,8 +128,7 @@ function renderFestival(yearId, festivalName, currentDay) {
     const container = document.createElement("div");
     container.classList.add("festival-container");
     if (!festival) {
-        console.error("Festival not found");
-        return;
+        throw "Festival not found";
     }
 
     const monthHeader = document.createElement("h3");
@@ -168,7 +177,7 @@ function renderYear(yearId, currentMonth, currentDay) {
     container.appendChild(monthsContainer);
 }
 
-function renderInput() {
+export function renderInput() {
     function handleYearRender() {
         const year = document.getElementById("yearInput").value;
         const month = document.getElementById("monthInput").value;

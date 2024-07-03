@@ -1,4 +1,6 @@
-function isLeapYear(yearId) {
+import { props } from "./props.js";
+
+export function isLeapYear(yearId) {
     const { leapYear } = props.calendar;
     return (yearId - leapYear.first) % leapYear.frequency === 0;
 }
@@ -17,7 +19,7 @@ function getDaysSinceYearStart(yearId, monthName) {
     return daysSinceYearStart;
 }
 
-function getMonthMoonCycle(yearId, monthName) {
+export function getMonthMoonCycle(yearId, monthName) {
     function getFirstFullMoon(yearId, monthName) {
         const { daysInYear, moon } = props.astronomical;
         const { fullMoon } = props.calendar;
@@ -84,7 +86,7 @@ function getAstronomicalEvents() {
     return { springEquinox, summerSolstice, autumnEquinox, winterSolstice };
 }
 
-function calculateDate(currentDate, daysToAdd) {
+export function calculateDate(currentDate, daysToAdd) {
     function getDaysInYear(yearId) {
         return isLeapYear(newYear)
             ? Math.ceil(props.astronomical.daysInYear)

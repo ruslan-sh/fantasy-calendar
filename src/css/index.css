@@ -1,7 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+:root {
+  --color-red-500: #f44336;
+  --color-orange-50: #fff3e0;
+  --color-gray-900: #212121;
+  --color-gray-50: #fafafa;
+
+  --font-header: "MedievalSharp", serif;
+  --font-body: "Almendra", cursive;
+}
+
 body {
-  font-family: "Almendra", cursive;
-  color: #212121;
-  background-color: #fff3e0;
+  font-family: var(--font-body);
+  color: var(--color-gray-900);
+  background-color: var(--color-orange-50);
 }
 
 h1,
@@ -11,7 +24,7 @@ h4,
 h5,
 h6 {
   font-weight: bold;
-  font-family: "MedievalSharp", serif;
+  font-family: var(--font-header);
 }
 
 h1 {
@@ -28,26 +41,45 @@ h2 {
   font-style: italic;
 }
 
-.full-moon::after {
-  content: "○";
+.moon-symbol {
+  height: 6px;
+  width: 6px;
+  border: 1px solid var(--color-gray-900);
+  border-radius: 50%;
+  display: none;
+  margin: 2px;
 }
 
-.new-moon::after {
-  content: "●";
+.full-moon .moon-symbol {
+  display: inline-block;
 }
 
-.half-waxing::after {
-  font-size: 0.7em;
-  content: "◐";
+.new-moon .moon-symbol {
+  display: inline-block;
+  background-color: var(--color-gray-900);
 }
 
-.half-waning::after {
-  font-size: 0.7em;
-  content: "◑";
+.half-waxing .moon-symbol {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-900) 50%,
+    rgba(0, 0, 0, 0) 50%
+  );
+}
+
+.half-waning .moon-symbol {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 50%,
+    var(--color-gray-900) 50%
+  );
 }
 
 .current-day {
-  border: 2px solid #e22;
+  border: 2px solid var(--color-red-500);
+  border-radius: 6px;
 }
 
 .equinox::after {

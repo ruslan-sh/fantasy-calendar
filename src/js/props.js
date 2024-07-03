@@ -1,4 +1,4 @@
-const props = {
+export const props = {
     astronomical: {
         daysInYear: 365.25,
         moon: {
@@ -46,5 +46,3 @@ const props = {
         ],
     },
 };
-
-renderInput();
