@@ -1,5 +1,6 @@
 import { props } from "./props.js";
 import { calculateDate, getMonthMoonCycle, isLeapYear } from "./logic.js";
+import { writeQueryParams } from "../ts/url-utils";
 
 function renderMoonCycle(moonCycle, dayId, element) {
     for (const [fullMoon, halfWaning, newMoon, halfWaxing] of moonCycle) {
@@ -177,12 +178,13 @@ function renderYear(yearId, currentMonth, currentDay) {
     container.appendChild(monthsContainer);
 }
 
-export function renderInput() {
+export function renderInput(initialYear, initialMonth, initialDay) {
     function handleYearRender() {
         const year = document.getElementById("yearInput").value;
         const month = document.getElementById("monthInput").value;
         const day = +document.getElementById("dayInput").value;
         renderYear(year, month, day);
+        writeQueryParams(year, month, day);
     }
 
     const container = document.getElementById("inputContainer");
@@ -196,7 +198,7 @@ export function renderInput() {
     yearInput.type = "number";
     yearInput.id = "yearInput";
     yearInput.placeholder = "Enter year";
-    yearInput.value = 1500;
+    yearInput.value = initialYear ?? 1500;
     yearInputContainer.appendChild(yearInput);
     container.appendChild(yearInputContainer);
 
@@ -223,6 +225,9 @@ export function renderInput() {
         month.hasLeapDay && option.classList.add("leap-day");
         monthInput.appendChild(option);
     }
+    if (initialMonth) {
+        monthInput.value = initialMonth;
+    }
     monthInputContainer.appendChild(monthInput);
     container.appendChild(monthInputContainer);
 
@@ -245,7 +250,7 @@ export function renderInput() {
     dayInput.type = "number";
     dayInput.id = "dayInput";
     dayInput.placeholder = "Enter day";
-    dayInput.value = 1;
+    dayInput.value = initialDay ?? 1;
     dayInputContainer.appendChild(dayInput);
     container.appendChild(dayInputContainer);
 

@@ -3,11 +3,13 @@
 -   Render Configuration (hide current day, hide events)
 -   Foldable footer
 -   Calendar Properties
--   Date in URL
 -   Store configuration in local storage
+-   Migrate to typescript
 
 # Done
-+-   Print Mode
-+-   Add moon events
-+-   Add days calculator
-+-   Style
+
++- Date in URL
++- Print Mode
++- Add moon events
++- Add days calculator
++- Style
