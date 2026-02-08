@@ -1,4 +1,6 @@
-export const props = {
+import type { AppProps } from "./types";
+
+export const props: AppProps = {
     astronomical: {
         daysInYear: 365.25,
         moon: {

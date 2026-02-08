@@ -1,13 +1,14 @@
--   Add astronomical events
--   Dark Mode
--   Render Configuration (hide current day, hide events)
--   Foldable footer
--   Calendar Properties
--   Store configuration in local storage
--   Migrate to typescript
+- Add astronomical events
+- Dark Mode
+- Render Configuration (hide current day, hide events)
+- Foldable footer
+- Calendar Properties
+- Store configuration in local storage
+- Print mode
 
 # Done
 
++- Migrate to typescript
 +- Date in URL
 +- Print Mode
 +- Add moon events

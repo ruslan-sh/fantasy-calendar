@@ -1,19 +1,42 @@
-import { props } from "./props.js";
-import { calculateDate, getMonthMoonCycle, isLeapYear } from "./logic.js";
-import { writeQueryParams } from "../ts/url-utils";
+import { props } from "./props";
+import { calculateDate, getMonthMoonCycle, isLeapYear } from "./logic";
+import { writeQueryParams } from "./url-utils";
+import type { CalendarDate, CalendarMonth, MoonCycle } from "./types";
 
-function renderMoonCycle(moonCycle, dayId, element) {
+function getRequiredElement<T extends HTMLElement>(id: string): T {
+    const element = document.getElementById(id);
+    if (!element) {
+        throw new Error(`Missing required element: ${id}`);
+    }
+    return element as T;
+}
+
+function getMonthByName(monthName: string): CalendarMonth {
+    const month = props.calendar.months.find((calendarMonth) => calendarMonth.name === monthName);
+    if (!month) {
+        throw new Error(`Month not found: ${monthName}`);
+    }
+    return month;
+}
+
+function renderMoonCycle(moonCycle: MoonCycle, dayId: number, element: HTMLElement): void {
     for (const [fullMoon, halfWaning, newMoon, halfWaxing] of moonCycle) {
         if (dayId === fullMoon) {
             element.classList.add("full-moon");
             break;
-        } else if (dayId === halfWaning) {
+        }
+
+        if (dayId === halfWaning) {
             element.classList.add("half-waning");
             break;
-        } else if (dayId === newMoon) {
+        }
+
+        if (dayId === newMoon) {
             element.classList.add("new-moon");
             break;
-        } else if (dayId === halfWaxing) {
+        }
+
+        if (dayId === halfWaxing) {
             element.classList.add("half-waxing");
             break;
         }
@@ -24,28 +47,26 @@ function renderMoonCycle(moonCycle, dayId, element) {
     element.appendChild(moonSymbol);
 }
 
-function renderMonth(yearId, monthName, currentDay) {
-    function calculateFirstDay(/*yearId, monthName*/) {
-        return 0; // Assuming the first day of every month is the first day of the week
+function renderMonth(yearId: number, monthName: string, currentDay: number): HTMLDivElement {
+    function calculateFirstDay(): number {
+        return 0;
     }
 
     function renderWeek(
-        tbody,
-        dayIndex,
-        firstDay,
-        weekLength,
-        monthDays,
-        moonCycle
-    ) {
+        tbody: HTMLTableSectionElement,
+        dayIndex: number,
+        firstDay: number,
+        weekLength: number,
+        monthDays: number,
+        moonCycle: MoonCycle
+    ): number {
         const tr = document.createElement("tr");
-        for (let i = 0; i < weekLength; i++) {
+        for (let dayOffset = 0; dayOffset < weekLength; dayOffset += 1) {
             const td = document.createElement("td");
-            if (dayIndex === 0) {
-                if (i < firstDay) {
-                    td.textContent = "";
-                    tr.appendChild(td);
-                    continue;
-                }
+            if (dayIndex === 0 && dayOffset < firstDay) {
+                td.textContent = "";
+                tr.appendChild(td);
+                continue;
             }
 
             if (dayIndex >= monthDays) {
@@ -54,42 +75,37 @@ function renderMonth(yearId, monthName, currentDay) {
                 continue;
             }
 
-            td.textContent = ++dayIndex;
+            dayIndex += 1;
+            td.textContent = String(dayIndex);
             if (dayIndex === currentDay) {
                 td.classList.add("current-day");
             }
 
             renderMoonCycle(moonCycle, dayIndex, td);
-
             tr.appendChild(td);
         }
+
         tbody.appendChild(tr);
         return dayIndex;
     }
 
-    const month = props.calendar.months.find((m) => m.name === monthName);
-    if (!month) {
-        throw "Month not found";
-    }
-
+    const month = getMonthByName(monthName);
     const moonCycle = getMonthMoonCycle(yearId, monthName);
 
     const container = document.createElement("div");
     const monthHeader = document.createElement("h2");
-    monthHeader.textContent = `${month.name}`;
+    monthHeader.textContent = month.name;
     container.appendChild(monthHeader);
 
     const monthAlias = document.createElement("p");
     monthAlias.classList.add("sub-header");
-    monthAlias.textContent = month.alias || "";
+    monthAlias.textContent = month.alias ?? "";
     container.appendChild(monthAlias);
 
-    // Create table elements
     const table = document.createElement("table");
     const thead = document.createElement("thead");
     const tbody = document.createElement("tbody");
 
-    // Populate the header
     const headerRow = document.createElement("tr");
     for (const day of props.calendar.days) {
         const th = document.createElement("th");
@@ -98,8 +114,7 @@ function renderMonth(yearId, monthName, currentDay) {
     }
     thead.appendChild(headerRow);
 
-    // Populate the body with days of the month
-    const firstDay = calculateFirstDay(yearId, monthName);
+    const firstDay = calculateFirstDay();
     let dayIndex = 0;
     while (dayIndex < month.days) {
         dayIndex = renderWeek(
@@ -112,7 +127,6 @@ function renderMonth(yearId, monthName, currentDay) {
         );
     }
 
-    // Append the table
     table.appendChild(thead);
     table.appendChild(tbody);
     container.appendChild(table);
@@ -120,17 +134,14 @@ function renderMonth(yearId, monthName, currentDay) {
     return container;
 }
 
-function renderFestival(yearId, festivalName, currentDay) {
-    const festival = props.calendar.months.find((m) => m.name === festivalName);
+function renderFestival(yearId: number, festivalName: string, currentDay: number): HTMLDivElement | null {
+    const festival = getMonthByName(festivalName);
     if (festival.hasLeapDay && !isLeapYear(yearId)) {
-        return;
+        return null;
     }
 
     const container = document.createElement("div");
     container.classList.add("festival-container");
-    if (!festival) {
-        throw "Festival not found";
-    }
 
     const monthHeader = document.createElement("h3");
     monthHeader.textContent = `${festival.name} Festival`;
@@ -142,14 +153,12 @@ function renderFestival(yearId, festivalName, currentDay) {
     renderMoonCycle(moonCycle, 1, monthHeader);
 
     container.appendChild(monthHeader);
-
     return container;
 }
 
-function renderYear(yearId, currentMonth, currentDay) {
-    // Assuming you have a container with the ID 'calendarContainer' in your HTML
-    const container = document.getElementById("calendarContainer");
-    container.innerHTML = ""; // Clear previous content
+function renderYear(yearId: number, currentMonth: string, currentDay: number): void {
+    const container = getRequiredElement<HTMLDivElement>("calendarContainer");
+    container.innerHTML = "";
 
     const yearHeader = document.createElement("h1");
     yearHeader.textContent = `${yearId} ${props.calendar.yearName}`;
@@ -157,20 +166,18 @@ function renderYear(yearId, currentMonth, currentDay) {
 
     const monthsContainer = document.createElement("div");
     monthsContainer.classList.add("months-container");
-    let lastMonthContainer = null;
+
+    let lastMonthContainer: HTMLDivElement | null = null;
     for (const month of props.calendar.months) {
         const currentDayOfMonth = month.name === currentMonth ? currentDay : 0;
         if (month.isFestival) {
-            const fesivalElement = renderFestival(
-                yearId,
-                month.name,
-                currentDayOfMonth
-            );
-            if (fesivalElement) {
-                lastMonthContainer.appendChild(fesivalElement);
+            const festivalElement = renderFestival(yearId, month.name, currentDayOfMonth);
+            if (festivalElement && lastMonthContainer) {
+                lastMonthContainer.appendChild(festivalElement);
             }
             continue;
         }
+
         lastMonthContainer = renderMonth(yearId, month.name, currentDayOfMonth);
         monthsContainer.appendChild(lastMonthContainer);
     }
@@ -178,19 +185,26 @@ function renderYear(yearId, currentMonth, currentDay) {
     container.appendChild(monthsContainer);
 }
 
-export function renderInput(initialYear, initialMonth, initialDay) {
-    function handleYearRender() {
-        const year = document.getElementById("yearInput").value;
-        const month = document.getElementById("monthInput").value;
-        const day = +document.getElementById("dayInput").value;
+export function renderInput(
+    initialYear: number | null,
+    initialMonth: string | null,
+    initialDay: number | null
+): void {
+    function handleYearRender(): void {
+        const yearInput = getRequiredElement<HTMLInputElement>("yearInput");
+        const monthInput = getRequiredElement<HTMLSelectElement>("monthInput");
+        const dayInput = getRequiredElement<HTMLInputElement>("dayInput");
+
+        const year = Number(yearInput.value);
+        const month = monthInput.value;
+        const day = Number(dayInput.value);
+
         renderYear(year, month, day);
         writeQueryParams(year, month, day);
     }
 
-    const container = document.getElementById("inputContainer");
-    container.innerHTML = ""; // Clear previous content
-
-    // Year input
+    const container = getRequiredElement<HTMLDivElement>("inputContainer");
+    container.innerHTML = "";
 
     const yearInputContainer = document.createElement("div");
     yearInputContainer.textContent = "Year: ";
@@ -198,20 +212,20 @@ export function renderInput(initialYear, initialMonth, initialDay) {
     yearInput.type = "number";
     yearInput.id = "yearInput";
     yearInput.placeholder = "Enter year";
-    yearInput.value = initialYear ?? 1500;
+    yearInput.value = String(initialYear ?? 1500);
     yearInputContainer.appendChild(yearInput);
     container.appendChild(yearInputContainer);
 
     yearInput.onchange = () => {
-        const value = document.getElementById("yearInput").value;
-        document
-            .getElementById("monthInput")
-            .querySelectorAll(".festival.leap-day")
-            .forEach((option) => (option.disabled = !isLeapYear(value)));
+        const yearValue = Number(yearInput.value);
+        const monthInput = getRequiredElement<HTMLSelectElement>("monthInput");
+        monthInput
+            .querySelectorAll<HTMLOptionElement>(".festival.leap-day")
+            .forEach((option) => {
+                option.disabled = !isLeapYear(yearValue);
+            });
         handleYearRender();
     };
-
-    // Month input
 
     const monthInputContainer = document.createElement("div");
     monthInputContainer.textContent = "Month: ";
@@ -221,28 +235,31 @@ export function renderInput(initialYear, initialMonth, initialDay) {
         const option = document.createElement("option");
         option.value = month.name;
         option.textContent = `${month.isFestival ? "[Day] " : ""}${month.name}`;
-        month.isFestival && option.classList.add("festival");
-        month.hasLeapDay && option.classList.add("leap-day");
+        if (month.isFestival) {
+            option.classList.add("festival");
+        }
+        if (month.hasLeapDay) {
+            option.classList.add("leap-day");
+        }
         monthInput.appendChild(option);
     }
+
     if (initialMonth) {
         monthInput.value = initialMonth;
     }
+
     monthInputContainer.appendChild(monthInput);
     container.appendChild(monthInputContainer);
 
     monthInput.onchange = () => {
-        const value = document.getElementById("monthInput").value;
-        const month = props.calendar.months.find((m) => m.name === value);
-        const dayInput = document.getElementById("dayInput");
-        dayInput.disabled = month.isFestival;
+        const month = getMonthByName(monthInput.value);
+        const dayInput = getRequiredElement<HTMLInputElement>("dayInput");
+        dayInput.disabled = Boolean(month.isFestival);
         if (month.isFestival) {
-            dayInput.value = 1;
+            dayInput.value = "1";
         }
         handleYearRender();
     };
-
-    // Day input
 
     const dayInputContainer = document.createElement("div");
     dayInputContainer.textContent = "Day: ";
@@ -250,13 +267,11 @@ export function renderInput(initialYear, initialMonth, initialDay) {
     dayInput.type = "number";
     dayInput.id = "dayInput";
     dayInput.placeholder = "Enter day";
-    dayInput.value = initialDay ?? 1;
+    dayInput.value = String(initialDay ?? 1);
     dayInputContainer.appendChild(dayInput);
     container.appendChild(dayInputContainer);
 
     dayInput.onchange = handleYearRender;
-
-    // Calculator
 
     const calculatorContainer = document.createElement("div");
     calculatorContainer.textContent = "Add days: ";
@@ -265,36 +280,33 @@ export function renderInput(initialYear, initialMonth, initialDay) {
     const calculatorInput = document.createElement("input");
     calculatorInput.type = "number";
     calculatorInput.id = "calculatorInput";
-    calculatorInput.value = 0;
+    calculatorInput.value = "0";
     calculatorInputContainer.appendChild(calculatorInput);
 
     const calculatorButton = document.createElement("button");
     calculatorButton.textContent = "Add";
     calculatorButton.onclick = () => {
-        const dayInput = document.getElementById("dayInput");
-        const newDate = calculateDate(
-            {
-                year: +document.getElementById("yearInput").value,
-                month: document.getElementById("monthInput").value,
-                day: +dayInput.value,
-            },
-            +calculatorInput.value
-        );
-        document.getElementById("yearInput").value = newDate.year;
-        document.getElementById("monthInput").value = newDate.month;
-        document.getElementById("dayInput").value = newDate.day;
+        const currentDayInput = getRequiredElement<HTMLInputElement>("dayInput");
+        const currentDate: CalendarDate = {
+            year: Number(getRequiredElement<HTMLInputElement>("yearInput").value),
+            month: getRequiredElement<HTMLSelectElement>("monthInput").value,
+            day: Number(currentDayInput.value),
+        };
+
+        const newDate = calculateDate(currentDate, Number(calculatorInput.value));
+        getRequiredElement<HTMLInputElement>("yearInput").value = String(newDate.year);
+        getRequiredElement<HTMLSelectElement>("monthInput").value = newDate.month;
+        getRequiredElement<HTMLInputElement>("dayInput").value = String(newDate.day);
         handleYearRender();
     };
+
     calculatorInputContainer.appendChild(calculatorButton);
     calculatorInputContainer.classList.add("nowrap");
     calculatorContainer.appendChild(calculatorInputContainer);
-
     container.appendChild(calculatorContainer);
 
     const hideInputButton = document.createElement("span");
-    hideInputButton.classList.add("material-icons");
-    hideInputButton.classList.add("pointer");
-    hideInputButton.classList.add("hide-input");
+    hideInputButton.classList.add("material-icons", "pointer", "hide-input");
     hideInputButton.onclick = () => {
         container.classList.toggle("hidden");
     };
