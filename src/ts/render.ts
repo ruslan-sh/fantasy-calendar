@@ -136,7 +136,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
 
 function renderFestival(yearId: number, festivalName: string, currentDay: number): HTMLDivElement | null {
     const festival = getMonthByName(festivalName);
-    if (festival.hasLeapDay && !isLeapYear(yearId)) {
+    if (festival.leapDayMode === "leap-only" && !isLeapYear(yearId)) {
         return null;
     }
 
@@ -220,7 +220,7 @@ export function renderInput(
         const yearValue = Number(yearInput.value);
         const monthInput = getRequiredElement<HTMLSelectElement>("monthInput");
         monthInput
-            .querySelectorAll<HTMLOptionElement>(".festival.leap-day")
+            .querySelectorAll<HTMLOptionElement>(".leap-only")
             .forEach((option) => {
                 option.disabled = !isLeapYear(yearValue);
             });
@@ -238,8 +238,8 @@ export function renderInput(
         if (month.isFestival) {
             option.classList.add("festival");
         }
-        if (month.hasLeapDay) {
-            option.classList.add("leap-day");
+        if (month.leapDayMode === "leap-only") {
+            option.classList.add("leap-only");
         }
         monthInput.appendChild(option);
     }

@@ -23,7 +23,7 @@ export interface CalendarMonth {
     alias?: string;
     days: number;
     isFestival?: boolean;
-    hasLeapDay?: boolean;
+    leapDayMode?: "extra-day" | "leap-only";
 }
 
 export interface CalendarDay {

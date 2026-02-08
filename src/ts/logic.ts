@@ -14,6 +14,18 @@ export function isLeapYear(yearId: number): boolean {
     return (yearId - leapYear.first) % leapYear.frequency === 0;
 }
 
+function getMonthDaysInYear(yearId: number, month: CalendarMonth): number {
+    if (!month.leapDayMode) {
+        return month.days;
+    }
+
+    if (month.leapDayMode === "leap-only") {
+        return isLeapYear(yearId) ? month.days : 0;
+    }
+
+    return isLeapYear(yearId) ? month.days + 1 : month.days;
+}
+
 function getDaysSinceYearStart(yearId: number, monthName: string): number {
     const months = props.calendar.months;
     const monthIndex = months.findIndex((month) => month.name === monthName);
@@ -22,12 +34,8 @@ function getDaysSinceYearStart(yearId: number, monthName: string): number {
     }
 
     return months.reduce((accumulator, month, index) => {
-        if (month.hasLeapDay && !isLeapYear(yearId)) {
-            return accumulator;
-        }
-
         if (index < monthIndex) {
-            return accumulator + month.days;
+            return accumulator + getMonthDaysInYear(yearId, month);
         }
 
         return accumulator;
@@ -88,15 +96,30 @@ export function calculateDate(currentDate: CalendarDate, daysToAdd: number): Cal
         newYear += 1;
     }
 
-    let newMonth = props.calendar.months[0].name;
-    while (newDay > getMonthByName(newMonth).days) {
-        newDay -= getMonthByName(newMonth).days;
-        const monthIndex = props.calendar.months.findIndex((month) => month.name === newMonth);
-        const nextMonth = props.calendar.months[monthIndex + 1];
-        if (!nextMonth) {
-            throw new Error("Next month not found");
+    const months = props.calendar.months;
+    let newMonth = months[0].name;
+    let monthIndex = 0;
+    while (monthIndex < months.length) {
+        const month = months[monthIndex];
+        if (!month) {
+            throw new Error("Month not found");
         }
-        newMonth = nextMonth.name;
+
+        const monthDays = getMonthDaysInYear(newYear, month);
+
+        if (monthDays === 0) {
+            monthIndex += 1;
+            continue;
+        }
+
+        if (newDay > monthDays) {
+            newDay -= monthDays;
+            monthIndex += 1;
+            continue;
+        }
+
+        newMonth = month.name;
+        break;
     }
 
     return { year: newYear, month: newMonth, day: newDay };
