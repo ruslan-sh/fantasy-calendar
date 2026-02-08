@@ -1,7 +1,5 @@
-const js = require("@eslint/js");
 const tsParser = require("@typescript-eslint/parser");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
-const globals = require("globals");
 
 module.exports = [
     {
@@ -12,10 +10,8 @@ module.exports = [
         languageOptions: {
             ecmaVersion: "latest",
             sourceType: "module",
-            globals: globals.browser,
         },
     },
-    js.configs.recommended,
     {
         files: ["**/*.{ts,mts,cts}"],
         languageOptions: {
