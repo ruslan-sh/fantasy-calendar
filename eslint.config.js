@@ -1,0 +1,45 @@
+const js = require("@eslint/js");
+const tsParser = require("@typescript-eslint/parser");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
+const globals = require("globals");
+
+module.exports = [
+    {
+        ignores: ["dist/**", "webpack.*", "eslint.config.js"],
+    },
+    {
+        files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+        languageOptions: {
+            ecmaVersion: "latest",
+            sourceType: "module",
+            globals: globals.browser,
+        },
+    },
+    js.configs.recommended,
+    {
+        files: ["**/*.{ts,mts,cts}"],
+        languageOptions: {
+            parser: tsParser,
+        },
+        plugins: {
+            "@typescript-eslint": tsPlugin,
+        },
+        rules: {
+            ...tsPlugin.configs.recommended.rules,
+            "@typescript-eslint/no-explicit-any": "warn",
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    argsIgnorePattern: "^_",
+                },
+            ],
+            "no-console": "error",
+        },
+    },
+    {
+        files: ["**/*.{js,mjs,cjs}"],
+        rules: {
+            "no-console": "error",
+        },
+    },
+];
