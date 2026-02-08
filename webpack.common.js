@@ -5,7 +5,7 @@ module.exports = {
     entry: "./src/index.ts",
     module: {
         rules: [
-            { test: /\.css$/, use: ["css-loader"] },
+            { test: /\.(sa|sc|c)ss$/, use: ["css-loader", "sass-loader"] },
             { test: /\.tsx?$/, use: "ts-loader", exclude: /node_modules/ },
             { test: /\.js$/, enforce: "pre", use: "source-map-loader" },
         ],

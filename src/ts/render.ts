@@ -22,28 +22,28 @@ function getMonthByName(monthName: string): CalendarMonth {
 function renderMoonCycle(moonCycle: MoonCycle, dayId: number, element: HTMLElement): void {
     for (const [fullMoon, halfWaning, newMoon, halfWaxing] of moonCycle) {
         if (dayId === fullMoon) {
-            element.classList.add("full-moon");
+            element.classList.add("calendar__day--moon-full");
             break;
         }
 
         if (dayId === halfWaning) {
-            element.classList.add("half-waning");
+            element.classList.add("calendar__day--moon-half-waning");
             break;
         }
 
         if (dayId === newMoon) {
-            element.classList.add("new-moon");
+            element.classList.add("calendar__day--moon-new");
             break;
         }
 
         if (dayId === halfWaxing) {
-            element.classList.add("half-waxing");
+            element.classList.add("calendar__day--moon-half-waxing");
             break;
         }
     }
 
     const moonSymbol = document.createElement("span");
-    moonSymbol.classList.add("moon-symbol");
+    moonSymbol.classList.add("calendar__moon-symbol");
     element.appendChild(moonSymbol);
 }
 
@@ -77,8 +77,9 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
 
             dayIndex += 1;
             td.textContent = String(dayIndex);
+            td.classList.add("calendar__day");
             if (dayIndex === currentDay) {
-                td.classList.add("current-day");
+                td.classList.add("calendar__day--current");
             }
 
             renderMoonCycle(moonCycle, dayIndex, td);
@@ -93,12 +94,13 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
     const moonCycle = getMonthMoonCycle(yearId, monthName);
 
     const container = document.createElement("div");
+    container.classList.add("calendar__month");
     const monthHeader = document.createElement("h2");
     monthHeader.textContent = month.name;
     container.appendChild(monthHeader);
 
     const monthAlias = document.createElement("p");
-    monthAlias.classList.add("sub-header");
+    monthAlias.classList.add("calendar__month-alias");
     monthAlias.textContent = month.alias ?? "";
     container.appendChild(monthAlias);
 
@@ -141,12 +143,13 @@ function renderFestival(yearId: number, festivalName: string, currentDay: number
     }
 
     const container = document.createElement("div");
-    container.classList.add("festival-container");
+    container.classList.add("calendar__festival");
 
     const monthHeader = document.createElement("h3");
+    monthHeader.classList.add("calendar__festival-title");
     monthHeader.textContent = `${festival.name} Festival`;
     if (currentDay === 1) {
-        monthHeader.classList.add("current-day");
+        monthHeader.classList.add("calendar__festival-title--current");
     }
 
     const moonCycle = getMonthMoonCycle(yearId, festivalName);
@@ -158,14 +161,16 @@ function renderFestival(yearId: number, festivalName: string, currentDay: number
 
 function renderYear(yearId: number, currentMonth: string, currentDay: number): void {
     const container = getRequiredElement<HTMLDivElement>("calendarContainer");
+    container.classList.add("calendar");
     container.innerHTML = "";
 
     const yearHeader = document.createElement("h1");
+    yearHeader.classList.add("calendar__year");
     yearHeader.textContent = `${yearId} ${props.calendar.yearName}`;
     container.appendChild(yearHeader);
 
     const monthsContainer = document.createElement("div");
-    monthsContainer.classList.add("months-container");
+    monthsContainer.classList.add("calendar__months");
 
     let lastMonthContainer: HTMLDivElement | null = null;
     for (const month of props.calendar.months) {
@@ -204,9 +209,11 @@ export function renderInput(
     }
 
     const container = getRequiredElement<HTMLDivElement>("inputContainer");
+    container.classList.add("calendar-controls");
     container.innerHTML = "";
 
     const yearInputContainer = document.createElement("div");
+    yearInputContainer.classList.add("calendar-controls__group");
     yearInputContainer.textContent = "Year: ";
     const yearInput = document.createElement("input");
     yearInput.type = "number";
@@ -220,7 +227,7 @@ export function renderInput(
         const yearValue = Number(yearInput.value);
         const monthInput = getRequiredElement<HTMLSelectElement>("monthInput");
         monthInput
-            .querySelectorAll<HTMLOptionElement>(".leap-only")
+            .querySelectorAll<HTMLOptionElement>(".calendar-controls__month-option--leap-only")
             .forEach((option) => {
                 option.disabled = !isLeapYear(yearValue);
             });
@@ -228,6 +235,7 @@ export function renderInput(
     };
 
     const monthInputContainer = document.createElement("div");
+    monthInputContainer.classList.add("calendar-controls__group");
     monthInputContainer.textContent = "Month: ";
     const monthInput = document.createElement("select");
     monthInput.id = "monthInput";
@@ -235,11 +243,8 @@ export function renderInput(
         const option = document.createElement("option");
         option.value = month.name;
         option.textContent = `${month.isFestival ? "[Day] " : ""}${month.name}`;
-        if (month.isFestival) {
-            option.classList.add("festival");
-        }
         if (month.leapDayMode === "leap-only") {
-            option.classList.add("leap-only");
+            option.classList.add("calendar-controls__month-option--leap-only");
         }
         monthInput.appendChild(option);
     }
@@ -262,6 +267,7 @@ export function renderInput(
     };
 
     const dayInputContainer = document.createElement("div");
+    dayInputContainer.classList.add("calendar-controls__group");
     dayInputContainer.textContent = "Day: ";
     const dayInput = document.createElement("input");
     dayInput.type = "number";
@@ -274,6 +280,7 @@ export function renderInput(
     dayInput.onchange = handleYearRender;
 
     const calculatorContainer = document.createElement("div");
+    calculatorContainer.classList.add("calendar-controls__group");
     calculatorContainer.textContent = "Add days: ";
 
     const calculatorInputContainer = document.createElement("span");
@@ -301,14 +308,14 @@ export function renderInput(
     };
 
     calculatorInputContainer.appendChild(calculatorButton);
-    calculatorInputContainer.classList.add("nowrap");
+    calculatorInputContainer.classList.add("calendar-controls__calculator-group");
     calculatorContainer.appendChild(calculatorInputContainer);
     container.appendChild(calculatorContainer);
 
     const hideInputButton = document.createElement("span");
-    hideInputButton.classList.add("material-icons", "pointer", "hide-input");
+    hideInputButton.classList.add("material-icons", "calendar-controls__toggle");
     hideInputButton.onclick = () => {
-        container.classList.toggle("hidden");
+        container.classList.toggle("calendar-controls--collapsed");
     };
     container.appendChild(hideInputButton);
 

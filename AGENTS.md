@@ -5,10 +5,15 @@ Prioritize minimal, focused diffs and preserve the existing architecture unless 
 
 # Project Layout
 
-- `src/index.js`: app entry point.
-- `src/js/logic.js`: calendar logic and state transitions.
-- `src/js/render.js`: DOM rendering and UI updates.
-- `src/css/index.css`: application styles.
+- `src/index.ts`: app entry point.
+- `src/index.ejs`: HTML template used by webpack.
+- `src/ts/logic.ts`: calendar logic and state transitions.
+- `src/ts/render.ts`: DOM rendering and UI updates.
+- `src/scss/index.scss`: SCSS entry point that composes partials.
+- `src/scss/abstracts/_variables.scss`: shared style variables.
+- `src/scss/base/_base.scss`: base/global styles.
+- `src/scss/components/`: component-level styles (for example `_controls.scss`, `_moon.scss`).
+- `src/scss/layout/_calendar.scss`: calendar layout styles.
 - `src/ts/url-utils.ts`: TypeScript URL helper utilities.
 - `webpack.common.js`, `webpack.dev.js`, `webpack.prod.js`: build and development configuration.
 - `dist/`: build output; do not hand-edit generated assets.
@@ -25,8 +30,8 @@ Validation policy for substantive changes:
 
 - Run `npm run build`.
 - Run lint checks relevant to touched files:
-  - JS/TS changes: run ESLint (for example `npx eslint src` if no npm lint script exists).
-  - CSS changes: run Stylelint (for example `npx stylelint "src/**/*.css"`).
+  - JS/TS changes: run ESLint (for example `npx eslint src`).
+  - SCSS changes: run Stylelint (prefer `npm run lint:styles`; equivalent: `npx stylelint "src/**/*.scss"`).
 - If any check cannot be run, document exactly what failed and why.
 
 # Coding Guardrails
@@ -35,7 +40,7 @@ Validation policy for substantive changes:
 - Preserve existing style, naming, and module boundaries in touched files.
 - Avoid new dependencies unless they are explicitly required.
 - Do not refactor unrelated code in the same change.
-- Prefer logic-only updates in `src/js/logic.js` and UI-only updates in `src/js/render.js` / `src/css/index.css`.
+- Prefer logic-only updates in `src/ts/logic.ts` and UI-only updates in `src/ts/render.ts` / `src/scss/`.
 
 # Change Workflow
 
@@ -47,7 +52,7 @@ Validation policy for substantive changes:
 # Definition of Done
 
 - Build passes (`npm run build`).
-- Relevant lint checks pass for all touched JS/TS/CSS files.
+- Relevant lint checks pass for all touched JS/TS/SCSS files.
 - No unintended regressions in primary calendar interactions.
 - Change summary includes concrete verification evidence.
 

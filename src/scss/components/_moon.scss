@@ -1,0 +1,46 @@
+@use "../abstracts/variables" as v;
+
+.calendar__moon-symbol {
+  display: none;
+  width: 6px;
+  height: 6px;
+  margin: v.$space-2;
+  border: v.$border-default;
+  border-radius: 50%;
+}
+
+.calendar__day--moon-full .calendar__moon-symbol {
+  display: inline-block;
+}
+
+.calendar__day--moon-new .calendar__moon-symbol {
+  display: inline-block;
+  background-color: v.$color-text-primary;
+}
+
+.calendar__day--moon-half-waxing .calendar__moon-symbol {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    v.$color-text-primary 50%,
+    rgb(0 0 0 / 0%) 50%
+  );
+}
+
+.calendar__day--moon-half-waning .calendar__moon-symbol {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 0%) 50%,
+    v.$color-text-primary 50%
+  );
+}
+
+.calendar__day--current {
+  box-shadow: inset 0 0 0 2px v.$color-accent;
+  border-radius: v.$radius-sm;
+}
+
+.calendar__equinox::after {
+  content: "⊖︎";
+}

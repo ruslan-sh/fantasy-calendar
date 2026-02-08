@@ -1,0 +1,44 @@
+@use "../abstracts/variables" as v;
+
+body {
+  font-family: v.$font-body;
+  color: v.$color-text-primary;
+  background-color: v.$color-surface;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  font-family: v.$font-header;
+}
+
+h1 {
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  margin: v.$space-16 0;
+}
+
+.material-icons {
+  font-family: "Material Icons", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "liga";
+}

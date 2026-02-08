@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack serve --open --config webpack.dev.js",
+    "lint:styles": "stylelint \"src/**/*.scss\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,6 +33,9 @@
     "eslint": "^9.39.2",
     "html-webpack-plugin": "^5",
     "mini-css-extract-plugin": "^2",
+    "postcss-scss": "^4.0.9",
+    "sass": "^1.93.3",
+    "sass-loader": "^16.0.6",
     "source-map-loader": "^5",
     "style-loader": "^4",
     "stylelint": "^17.1.1",
