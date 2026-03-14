@@ -2,14 +2,12 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-    entry: "./src/index.js",
+    entry: "./src/index.ts",
     module: {
         rules: [
-            { test: /\.css$/, use: ["css-loader"] },
-            // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
-            { test: /\.ts$/, loader: "ts-loader" },
-            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-            { test: /\.js$/, loader: "source-map-loader" },
+            { test: /\.(sa|sc|c)ss$/, use: ["css-loader", "sass-loader"] },
+            { test: /\.tsx?$/, use: "ts-loader", exclude: /node_modules/ },
+            { test: /\.js$/, enforce: "pre", use: "source-map-loader" },
         ],
     },
     output: {
@@ -20,11 +18,9 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: "./src/index.ejs",
-            //favicon: "./src/favicon.png",
         }),
     ],
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: ["", ".webpack.js", ".web.js", ".ts", ".js"],
+        extensions: [".ts", ".tsx", ".js"],
     },
 };

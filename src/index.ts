@@ -1,5 +1,5 @@
-import "./css/index.css";
-import { renderInput } from "./js/render";
+import "./scss/index.scss";
+import { renderInput } from "./ts/render";
 import { readQueryParams } from "./ts/url-utils";
 
 const { year, month, day } = readQueryParams();

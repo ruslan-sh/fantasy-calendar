@@ -1,0 +1,26 @@
+@use "../abstracts/variables" as v;
+
+.calendar__year {
+  text-align: center;
+}
+
+.calendar__months {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0 v.$space-16;
+}
+
+.calendar__month {
+  margin: 0 v.$space-16;
+}
+
+.calendar__month-alias {
+  margin: -1 * v.$space-16 0 v.$space-8;
+  font-style: italic;
+}
+
+.calendar__festival-title--current {
+  border: v.$border-focus;
+  border-radius: v.$radius-sm;
+}

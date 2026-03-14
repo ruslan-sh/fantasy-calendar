@@ -127,6 +127,10 @@ h2 {
   content: "tune";
 }
 
+.leap-only:disabled {
+  color: #777;
+}
+
 .material-icons {
   font-family: "Material Icons";
   font-weight: normal;

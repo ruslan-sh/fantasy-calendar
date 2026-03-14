@@ -16,7 +16,7 @@ module.exports = mergeWithRules({
     },
     devtool: "inline-source-map",
     module: {
-        rules: [{ test: /\.css$/, use: ["style-loader"] }],
+        rules: [{ test: /\.(sa|sc|c)ss$/, use: ["style-loader"] }],
     },
     optimization: {
         runtimeChunk: "single",

@@ -1,4 +1,6 @@
-export const props = {
+import type { AppProps } from "./types";
+
+export const props: AppProps = {
     astronomical: {
         daysInYear: 365.25,
         moon: {
@@ -23,7 +25,7 @@ export const props = {
             { name: "Kythorn", alias: "The Time of Flowers", days: 30 },
             { name: "Flamerule", alias: "Summertide", days: 30 },
             { name: "Midsummer", days: 1, isFestival: true },
-            { name: "Shieldmeet", days: 1, isFestival: true, hasLeapDay: true },
+            { name: "Shieldmeet", days: 1, isFestival: true, leapDayMode: "leap-only" },
             { name: "Eleasis", alias: "Highsun", days: 30 },
             { name: "Eleint", alias: "The Fading", days: 30 },
             { name: "Highharvestide", days: 1, isFestival: true },

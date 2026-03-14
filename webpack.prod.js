@@ -15,7 +15,7 @@ module.exports = mergeWithRules({
     mode: "production",
     devtool: "source-map",
     module: {
-        rules: [{ test: /\.css$/, use: [MiniCssExtractPlugin.loader] }],
+        rules: [{ test: /\.(sa|sc|c)ss$/, use: [MiniCssExtractPlugin.loader] }],
     },
     optimization: {
         minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
