@@ -154,6 +154,8 @@ Delete the superseded moon tuple logic once the new renderer path is proven.
 
 ## Task 6: Add Regression Coverage for Boundaries and Long-Range Initialization
 
+Status: Done
+
 ### Goal
 Lock in correctness for the new model with focused regression checks.
 

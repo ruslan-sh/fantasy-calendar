@@ -167,6 +167,13 @@ test("classifyMoonPhase matches spec boundary semantics", () => {
     assert.equal(moon.classifyMoonPhase(0.775001), MoonPhaseState.None);
 });
 
+test("classifyMoonPhase assigns waning and waxing halves by cycle side", () => {
+    assert.equal(moon.classifyMoonPhase(0.24), MoonPhaseState.HalfWaning);
+    assert.equal(moon.classifyMoonPhase(0.26), MoonPhaseState.HalfWaning);
+    assert.equal(moon.classifyMoonPhase(0.74), MoonPhaseState.HalfWaxing);
+    assert.equal(moon.classifyMoonPhase(0.76), MoonPhaseState.HalfWaxing);
+});
+
 test("getDaysOffsetFromFullMoon returns zero at the configured anchor full moon", () => {
     const anchorFullMoonDate = getAnchorFullMoonDate();
 
@@ -206,6 +213,33 @@ test("getMoonCyclePosition initializes directly from the anchor for past and fut
             expectedCyclePosition,
             `${yearId} ${monthName} ${dayId}`,
         );
+    }
+});
+
+test("getMoonCyclePosition matches a naive reference across a wide year range", () => {
+    const referenceMonths = ["Hammer", "Greengrass", "Shieldmeet", "Nightal"] as const;
+    const referenceYears = [900, 1024, 1200, 1372, 1600, 2000, 2400];
+
+    for (const yearId of referenceYears) {
+        for (const monthName of referenceMonths) {
+            const monthDays = getMonthDaysInYear(yearId, getMonthByName(monthName));
+            if (monthDays === 0) {
+                continue;
+            }
+
+            for (const dayId of [1, monthDays]) {
+                const expectedCyclePosition = moon.normalizeMoonCyclePosition(
+                    naiveDaysOffsetFromAnchor(yearId, monthName, dayId)
+                    / testMoonProps.astronomical.moon.period,
+                );
+
+                assertClose(
+                    moon.getMoonCyclePosition(yearId, monthName, dayId),
+                    expectedCyclePosition,
+                    `${yearId} ${monthName} ${dayId}`,
+                );
+            }
+        }
     }
 });
 
