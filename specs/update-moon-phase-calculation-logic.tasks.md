@@ -97,6 +97,8 @@ Generate month-level day markers using the new daily phase model while keeping t
 
 ## Task 4: Switch Renderer to the New Daily Moon-State API
 
+Status: Done
+
 ### Goal
 Adopt the new daily moon-state model in rendering while preserving existing CSS classes and a working UI.
 
