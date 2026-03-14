@@ -3,10 +3,11 @@ import {
     countLeapYearsBetween,
     getDayOfYear,
     getDaysSinceYearStart,
+    getMonthDaysInYear,
     getMonthByName,
 } from "./logic";
 import { MoonPhaseState } from "./types";
-import type { MoonCycle } from "./types";
+import type { MonthMoonPhases, MoonCycle } from "./types";
 
 class MoonWindow {
     public static readonly Full = 0.025;
@@ -94,6 +95,25 @@ export function getDaysOffsetFromFullMoon(
 export function getMoonCyclePosition(yearId: number, monthName: string, dayId: number): number {
     const daysOffset = getDaysOffsetFromFullMoon(yearId, monthName, dayId);
     return normalizeMoonCyclePosition(daysOffset / props.astronomical.moon.period);
+}
+
+export function getMonthMoonPhases(yearId: number, monthName: string): MonthMoonPhases {
+    const month = getMonthByName(monthName);
+    const monthMoonPhases: MonthMoonPhases = {};
+    const monthDays = getMonthDaysInYear(yearId, month);
+
+    let cyclePos = getMoonCyclePosition(yearId, monthName, 1);
+    for (let dayId = 1; dayId <= monthDays; dayId += 1) {
+        const moonPhase = classifyMoonPhase(cyclePos);
+
+        if (moonPhase !== MoonPhaseState.None) {
+            monthMoonPhases[dayId] = moonPhase;
+        }
+
+        cyclePos = advanceMoonCyclePosition(cyclePos);
+    }
+
+    return monthMoonPhases;
 }
 
 export function getMonthMoonCycle(yearId: number, monthName: string): MoonCycle {

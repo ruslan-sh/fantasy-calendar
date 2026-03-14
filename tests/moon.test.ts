@@ -6,6 +6,7 @@ import {
     advanceMoonCyclePosition,
     classifyMoonPhase,
     getDaysOffsetFromFullMoon,
+    getMonthMoonPhases,
     getMoonCyclePosition,
     normalizeMoonCyclePosition,
 } from "../src/ts/moon";
@@ -157,4 +158,58 @@ test("festival and normal months use the same day-start moon logic", () => {
 
     assertClose(greengrassCyclePosition, advanceMoonCyclePosition(dayBeforeFestival));
     assertClose(dayAfterFestival, advanceMoonCyclePosition(greengrassCyclePosition));
+});
+
+test("getMonthMoonPhases returns only classified days for a normal month", () => {
+    const moonPhases = getMonthMoonPhases(1372, "Hammer");
+    const hammerDays = getMonthByName("Hammer").days;
+
+    for (let dayId = 1; dayId <= hammerDays; dayId += 1) {
+        const expectedMoonPhase = classifyMoonPhase(getMoonCyclePosition(1372, "Hammer", dayId));
+
+        if (expectedMoonPhase === MoonPhaseState.None) {
+            assert.equal(moonPhases[dayId], undefined, `day ${dayId}`);
+            continue;
+        }
+
+        assert.equal(moonPhases[dayId], expectedMoonPhase, `day ${dayId}`);
+    }
+});
+
+test("getMonthMoonPhases applies the same classification rules to festival days", () => {
+    const midsummerMoonPhases = getMonthMoonPhases(1375, "Midsummer");
+    const shieldmeetMoonPhases = getMonthMoonPhases(1376, "Shieldmeet");
+    const midsummerMoonPhase = classifyMoonPhase(getMoonCyclePosition(1375, "Midsummer", 1));
+    const shieldmeetMoonPhase = classifyMoonPhase(getMoonCyclePosition(1376, "Shieldmeet", 1));
+
+    assert.deepEqual(
+        midsummerMoonPhases,
+        midsummerMoonPhase === MoonPhaseState.None ? {} : { 1: midsummerMoonPhase },
+    );
+    assert.deepEqual(
+        shieldmeetMoonPhases,
+        shieldmeetMoonPhase === MoonPhaseState.None ? {} : { 1: shieldmeetMoonPhase },
+    );
+});
+
+test("getMonthMoonPhases returns no days for leap-only festivals outside leap years", () => {
+    assert.deepEqual(getMonthMoonPhases(1375, "Shieldmeet"), {});
+});
+
+test("getMonthMoonPhases advances month state day by day from the month start", () => {
+    const moonPhases = getMonthMoonPhases(1376, "Eleint");
+    const eleintDays = getMonthByName("Eleint").days;
+    let cyclePos = getMoonCyclePosition(1376, "Eleint", 1);
+
+    for (let dayId = 1; dayId <= eleintDays; dayId += 1) {
+        const expectedMoonPhase = classifyMoonPhase(cyclePos);
+
+        if (expectedMoonPhase === MoonPhaseState.None) {
+            assert.equal(moonPhases[dayId], undefined, `day ${dayId}`);
+        } else {
+            assert.equal(moonPhases[dayId], expectedMoonPhase, `day ${dayId}`);
+        }
+
+        cyclePos = advanceMoonCyclePosition(cyclePos);
+    }
 });

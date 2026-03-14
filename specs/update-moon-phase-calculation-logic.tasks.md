@@ -64,6 +64,8 @@ Implement O(1) moon phase initialization from the known full-moon anchor, still 
 
 ## Task 3: Build a New Daily Moon-State Month API Alongside the Existing API
 
+Status: Done
+
 ### Goal
 Generate month-level day markers using the new daily phase model while keeping the old API available until renderer migration is done.
 
