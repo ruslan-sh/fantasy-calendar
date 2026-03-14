@@ -33,6 +33,8 @@ Introduce the new moon-state vocabulary and pure helper functions without changi
 
 ## Task 2: Add Direct Year/Day Phase Initialization Utilities
 
+Status: Done
+
 ### Goal
 Implement O(1) moon phase initialization from the known full-moon anchor, still without changing the renderer.
 
@@ -42,7 +44,7 @@ Implement O(1) moon phase initialization from the known full-moon anchor, still 
   - computing day-of-year offsets from the full-moon anchor
   - computing `cyclePos` for the start of any target day
 - Reuse shared calendar/date helpers from `src/ts/logic.ts` as needed.
-- Keep these helpers internal or minimally exported for verification.
+- Export these helpers as needed for direct unit verification.
 - Do not replace the current month moon rendering path yet.
 
 ### Why This Task Is Complete
@@ -55,8 +57,8 @@ Implement O(1) moon phase initialization from the known full-moon anchor, still 
 - No renderer changes yet.
 
 ### Validation
-- Verify a few reference dates against the existing implementation where outputs overlap meaningfully.
-- Verify far-past and far-future dates through direct helper checks.
+- Verify anchor, leap-year, festival, and far-past/far-future dates through direct helper checks.
+- Cover the exported helpers with focused unit tests.
 - Run `npm run build`.
 - Run ESLint for touched TS files.
 

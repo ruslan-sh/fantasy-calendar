@@ -42,6 +42,33 @@ export function getDaysSinceYearStart(yearId: number, monthName: string): number
     }, 0);
 }
 
+export function countLeapYearsBetween(startYearId: number, endYearId: number): number {
+    if (startYearId === endYearId) {
+        return 0;
+    }
+
+    const rangeStart = Math.min(startYearId, endYearId);
+    const rangeEnd = Math.max(startYearId, endYearId);
+    const { leapYear } = props.calendar;
+
+    const firstLeapYearInRange =
+        leapYear.first +
+        Math.ceil((rangeStart - leapYear.first) / leapYear.frequency) * leapYear.frequency;
+
+    if (firstLeapYearInRange >= rangeEnd) {
+        return 0;
+    }
+
+    const leapYearsInRange =
+        Math.floor((rangeEnd - 1 - firstLeapYearInRange) / leapYear.frequency) + 1;
+
+    return startYearId < endYearId ? leapYearsInRange : -leapYearsInRange;
+}
+
+export function getDayOfYear(yearId: number, monthName: string, dayId: number): number {
+    return getDaysSinceYearStart(yearId, monthName) + dayId;
+}
+
 export function calculateDate(currentDate: CalendarDate, daysToAdd: number): CalendarDate {
     function getDaysInYear(yearId: number): number {
         return isLeapYear(yearId)

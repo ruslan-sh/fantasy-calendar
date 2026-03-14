@@ -1,5 +1,10 @@
 import { props } from "./props";
-import { getDaysSinceYearStart, getMonthByName } from "./logic";
+import {
+    countLeapYearsBetween,
+    getDayOfYear,
+    getDaysSinceYearStart,
+    getMonthByName,
+} from "./logic";
 import { MoonPhaseState } from "./types";
 import type { MoonCycle } from "./types";
 
@@ -18,6 +23,14 @@ class MoonWindow {
 }
 
 export function normalizeMoonCyclePosition(cyclePos: number): number {
+    if (cyclePos >= 0 && cyclePos < 1) {
+        return cyclePos;
+    }
+
+    if (cyclePos === 1) {
+        return 0;
+    }
+
     return ((cyclePos % 1) + 1) % 1;
 }
 
@@ -28,6 +41,8 @@ export function advanceMoonCyclePosition(cyclePos: number): number {
 
 export function classifyMoonPhase(cyclePos: number): MoonPhaseState {
     const normalizedCyclePos = normalizeMoonCyclePosition(cyclePos);
+    const newMoonLowerBoundary = 0.5 - MoonWindow.New;
+    const newMoonUpperBoundary = 0.5 + MoonWindow.New;
 
     if (
         normalizedCyclePos < MoonWindow.Full ||
@@ -36,7 +51,10 @@ export function classifyMoonPhase(cyclePos: number): MoonPhaseState {
         return MoonPhaseState.Full;
     }
 
-    if (Math.abs(normalizedCyclePos - 0.5) <= MoonWindow.New) {
+    if (
+        normalizedCyclePos >= newMoonLowerBoundary &&
+        normalizedCyclePos <= newMoonUpperBoundary
+    ) {
         return MoonPhaseState.New;
     }
 
@@ -55,6 +73,27 @@ export function classifyMoonPhase(cyclePos: number): MoonPhaseState {
     }
 
     return MoonPhaseState.None;
+}
+
+export function getDaysOffsetFromFullMoon(
+    yearId: number,
+    monthName: string,
+    dayId: number,
+): number {
+    const { fullMoon } = props.calendar;
+    const baseYearDays = Math.floor(props.astronomical.daysInYear);
+
+    return (
+        getDayOfYear(yearId, monthName, dayId) -
+        fullMoon.day +
+        (yearId - fullMoon.year) * baseYearDays +
+        countLeapYearsBetween(fullMoon.year, yearId)
+    );
+}
+
+export function getMoonCyclePosition(yearId: number, monthName: string, dayId: number): number {
+    const daysOffset = getDaysOffsetFromFullMoon(yearId, monthName, dayId);
+    return normalizeMoonCyclePosition(daysOffset / props.astronomical.moon.period);
 }
 
 export function getMonthMoonCycle(yearId: number, monthName: string): MoonCycle {
