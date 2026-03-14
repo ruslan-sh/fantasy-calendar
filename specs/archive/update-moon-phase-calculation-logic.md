@@ -176,11 +176,11 @@ Notes:
 
 ## Suggested Implementation Shape
 - Keep shared calendar/date helpers in `src/ts/logic.ts`; keep moon-specific behavior in `src/ts/moon.ts`; keep rendering concerns in `src/ts/render.ts`.
-- The moon module may be implemented as a dedicated class/service that accepts the subset of app props it needs, rather than reading global props directly.
-- Replace the legacy tuple-based month moon API with a daily classification-oriented API, for example:
-- Month-level lookup for renderer compatibility.
-- Year-start phase initializer that accepts target year and returns `cyclePos` for day 1 at day start.
-- Use moon typing that represents day-level classified states while preserving compatibility with existing rendering classes.
+- The moon module is implemented as a dedicated `Moon` class that accepts `MoonProps` (the subset of app props it needs) in its constructor, rather than reading global props directly.
+- Replace the legacy tuple-based month moon API with a daily classification-oriented API:
+- `getMonthMoonPhases(yearId, monthName)` returns day-indexed classified moon states for the renderer.
+- `getMoonCyclePosition(yearId, monthName, dayId)` returns normalized `cyclePos` for the start of a target day.
+- `MoonPhaseState` represents day-level classified states while preserving compatibility with existing rendering classes.
 
 ## Backward Compatibility
 - Existing CSS class names for moon states remain unchanged.
