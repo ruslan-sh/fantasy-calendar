@@ -52,6 +52,14 @@ export interface CalendarDate {
     day: number;
 }
 
+export enum MoonPhaseState {
+    Full = "full",
+    New = "new",
+    HalfWaning = "half-waning",
+    HalfWaxing = "half-waxing",
+    None = "none",
+}
+
 export type MoonCycleEvent = [number, number, number, number];
 export type MoonCycle = MoonCycleEvent[];
 

@@ -1,5 +1,6 @@
 import { props } from "./props";
-import { calculateDate, getMonthMoonCycle, isLeapYear } from "./logic";
+import { calculateDate, isLeapYear } from "./logic";
+import { getMonthMoonCycle } from "./moon";
 import { writeQueryParams } from "./url-utils";
 import type { CalendarDate, CalendarMonth, MoonCycle } from "./types";
 
