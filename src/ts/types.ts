@@ -67,9 +67,6 @@ export enum MoonPhaseState {
 
 export type MonthMoonPhases = Partial<Record<number, MoonPhaseState>>;
 
-export type MoonCycleEvent = [number, number, number, number];
-export type MoonCycle = MoonCycleEvent[];
-
 export interface QueryParams {
     year: number | null;
     month: string | null;

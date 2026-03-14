@@ -128,6 +128,8 @@ Adopt the new daily moon-state model in rendering while preserving existing CSS 
 
 ## Task 5: Remove Legacy Quarter-Event Moon Logic and Tighten Types
 
+Status: Done
+
 ### Goal
 Delete the superseded moon tuple logic once the new renderer path is proven.
 

@@ -1,12 +1,11 @@
 import {
     countLeapYearsBetweenInCalendar,
     getDayOfYearInCalendar,
-    getDaysSinceYearStartInCalendar,
     getMonthByNameInCalendar,
     getMonthDaysInCalendarYear,
 } from "./logic";
 import { MoonPhaseState } from "./types";
-import type { MonthMoonPhases, MoonCycle, MoonProps } from "./types";
+import type { MonthMoonPhases, MoonProps } from "./types";
 
 class MoonWindow {
     public static readonly Full = 0.025;
@@ -113,45 +112,5 @@ export class Moon {
         }
 
         return monthMoonPhases;
-    }
-
-    public getMonthMoonCycle(yearId: number, monthName: string): MoonCycle {
-        const { astronomical, calendar } = this.props;
-
-        function getFirstFullMoon(targetYearId: number, targetMonthName: string): number {
-            const daysSinceYearStart = getDaysSinceYearStartInCalendar(targetYearId, targetMonthName, {
-                months: calendar.months,
-                leapYear: calendar.leapYear,
-            });
-            const daysSinceFullMoon =
-                (targetYearId - calendar.fullMoon.year) * astronomical.daysInYear -
-                calendar.fullMoon.day +
-                daysSinceYearStart;
-
-            if (daysSinceFullMoon > 0) {
-                return astronomical.moon.period - (daysSinceFullMoon % astronomical.moon.period);
-            }
-
-            return Math.abs((daysSinceFullMoon % astronomical.moon.period) + astronomical.moon.period);
-        }
-
-        const daysInMonth = getMonthByNameInCalendar(monthName, { months: calendar.months }).days;
-        const moonEventLength = astronomical.moon.period / 4;
-
-        const firstFullMoon = getFirstFullMoon(yearId, monthName);
-        let fullMoon = firstFullMoon - astronomical.moon.period;
-        const moonCycle: MoonCycle = [];
-
-        while (fullMoon < daysInMonth) {
-            moonCycle.push([
-                Math.ceil(fullMoon),
-                Math.ceil(fullMoon + moonEventLength),
-                Math.ceil(fullMoon + moonEventLength * 2),
-                Math.ceil(fullMoon + moonEventLength * 3),
-            ]);
-            fullMoon += astronomical.moon.period;
-        }
-
-        return moonCycle;
     }
 }
