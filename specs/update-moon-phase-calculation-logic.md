@@ -175,7 +175,8 @@ Notes:
 - Intra-day threshold crossings are ignored by design because sampling is fixed at day start.
 
 ## Suggested Implementation Shape
-- Keep logic in `src/ts/logic.ts`; keep rendering concerns in `src/ts/render.ts`.
+- Keep shared calendar/date helpers in `src/ts/logic.ts`; keep moon-specific behavior in `src/ts/moon.ts`; keep rendering concerns in `src/ts/render.ts`.
+- The moon module may be implemented as a dedicated class/service that accepts the subset of app props it needs, rather than reading global props directly.
 - Replace or supplement `getMonthMoonCycle` with daily classification-oriented API, for example:
 - Month-level lookup for renderer compatibility.
 - Year-start phase initializer that accepts target year and returns `cyclePos` for day 1 at day start.

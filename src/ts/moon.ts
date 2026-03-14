@@ -1,13 +1,12 @@
-import { props } from "./props";
 import {
-    countLeapYearsBetween,
-    getDayOfYear,
-    getDaysSinceYearStart,
-    getMonthDaysInYear,
-    getMonthByName,
+    countLeapYearsBetweenInCalendar,
+    getDayOfYearInCalendar,
+    getDaysSinceYearStartInCalendar,
+    getMonthByNameInCalendar,
+    getMonthDaysInCalendarYear,
 } from "./logic";
 import { MoonPhaseState } from "./types";
-import type { MonthMoonPhases, MoonCycle } from "./types";
+import type { MonthMoonPhases, MoonCycle, MoonProps } from "./types";
 
 class MoonWindow {
     public static readonly Full = 0.025;
@@ -23,132 +22,136 @@ class MoonWindow {
     public static readonly HalfUpperWaxing = 0.775;
 }
 
-export function normalizeMoonCyclePosition(cyclePos: number): number {
-    if (cyclePos >= 0 && cyclePos < 1) {
-        return cyclePos;
-    }
+export class Moon {
+    public constructor(private readonly props: MoonProps) {}
 
-    if (cyclePos === 1) {
-        return 0;
-    }
-
-    return ((cyclePos % 1) + 1) % 1;
-}
-
-export function advanceMoonCyclePosition(cyclePos: number): number {
-    const dailyStep = 1 / props.astronomical.moon.period;
-    return normalizeMoonCyclePosition(cyclePos + dailyStep);
-}
-
-export function classifyMoonPhase(cyclePos: number): MoonPhaseState {
-    const normalizedCyclePos = normalizeMoonCyclePosition(cyclePos);
-    const newMoonLowerBoundary = 0.5 - MoonWindow.New;
-    const newMoonUpperBoundary = 0.5 + MoonWindow.New;
-
-    if (
-        normalizedCyclePos < MoonWindow.Full ||
-        normalizedCyclePos > 1 - MoonWindow.Full
-    ) {
-        return MoonPhaseState.Full;
-    }
-
-    if (
-        normalizedCyclePos >= newMoonLowerBoundary &&
-        normalizedCyclePos <= newMoonUpperBoundary
-    ) {
-        return MoonPhaseState.New;
-    }
-
-    if (
-        normalizedCyclePos > MoonWindow.HalfLowerWaning &&
-        normalizedCyclePos <= MoonWindow.HalfUpperWaning
-    ) {
-        return MoonPhaseState.HalfWaning;
-    }
-
-    if (
-        normalizedCyclePos > MoonWindow.HalfLowerWaxing &&
-        normalizedCyclePos <= MoonWindow.HalfUpperWaxing
-    ) {
-        return MoonPhaseState.HalfWaxing;
-    }
-
-    return MoonPhaseState.None;
-}
-
-export function getDaysOffsetFromFullMoon(
-    yearId: number,
-    monthName: string,
-    dayId: number,
-): number {
-    const { fullMoon } = props.calendar;
-    const baseYearDays = Math.floor(props.astronomical.daysInYear);
-
-    return (
-        getDayOfYear(yearId, monthName, dayId) -
-        fullMoon.day +
-        (yearId - fullMoon.year) * baseYearDays +
-        countLeapYearsBetween(fullMoon.year, yearId)
-    );
-}
-
-export function getMoonCyclePosition(yearId: number, monthName: string, dayId: number): number {
-    const daysOffset = getDaysOffsetFromFullMoon(yearId, monthName, dayId);
-    return normalizeMoonCyclePosition(daysOffset / props.astronomical.moon.period);
-}
-
-export function getMonthMoonPhases(yearId: number, monthName: string): MonthMoonPhases {
-    const month = getMonthByName(monthName);
-    const monthMoonPhases: MonthMoonPhases = {};
-    const monthDays = getMonthDaysInYear(yearId, month);
-
-    let cyclePos = getMoonCyclePosition(yearId, monthName, 1);
-    for (let dayId = 1; dayId <= monthDays; dayId += 1) {
-        const moonPhase = classifyMoonPhase(cyclePos);
-
-        if (moonPhase !== MoonPhaseState.None) {
-            monthMoonPhases[dayId] = moonPhase;
+    public normalizeMoonCyclePosition(cyclePos: number): number {
+        if (cyclePos >= 0 && cyclePos < 1) {
+            return cyclePos;
         }
 
-        cyclePos = advanceMoonCyclePosition(cyclePos);
-    }
-
-    return monthMoonPhases;
-}
-
-export function getMonthMoonCycle(yearId: number, monthName: string): MoonCycle {
-    function getFirstFullMoon(targetYearId: number, targetMonthName: string): number {
-        const { daysInYear, moon } = props.astronomical;
-        const { fullMoon } = props.calendar;
-
-        const daysSinceYearStart = getDaysSinceYearStart(targetYearId, targetMonthName);
-        const daysSinceFullMoon =
-            (targetYearId - fullMoon.year) * daysInYear - fullMoon.day + daysSinceYearStart;
-
-        if (daysSinceFullMoon > 0) {
-            return moon.period - (daysSinceFullMoon % moon.period);
+        if (cyclePos === 1) {
+            return 0;
         }
 
-        return Math.abs((daysSinceFullMoon % moon.period) + moon.period);
+        return ((cyclePos % 1) + 1) % 1;
     }
 
-    const { moon } = props.astronomical;
-    const daysInMonth = getMonthByName(monthName).days;
-    const moonEventLength = moon.period / 4;
-
-    const firstFullMoon = getFirstFullMoon(yearId, monthName);
-    let fullMoon = firstFullMoon - moon.period;
-    const moonCycle: MoonCycle = [];
-
-    while (fullMoon < daysInMonth) {
-        moonCycle.push([
-            Math.ceil(fullMoon),
-            Math.ceil(fullMoon + moonEventLength),
-            Math.ceil(fullMoon + moonEventLength * 2),
-            Math.ceil(fullMoon + moonEventLength * 3),
-        ]);
-        fullMoon += moon.period;
+    public advanceMoonCyclePosition(cyclePos: number): number {
+        const dailyStep = 1 / this.props.astronomical.moon.period;
+        return this.normalizeMoonCyclePosition(cyclePos + dailyStep);
     }
 
-    return moonCycle;
+    public classifyMoonPhase(cyclePos: number): MoonPhaseState {
+        const normalizedCyclePos = this.normalizeMoonCyclePosition(cyclePos);
+        const newMoonLowerBoundary = 0.5 - MoonWindow.New;
+        const newMoonUpperBoundary = 0.5 + MoonWindow.New;
+
+        if (
+            normalizedCyclePos < MoonWindow.Full ||
+            normalizedCyclePos > 1 - MoonWindow.Full
+        ) {
+            return MoonPhaseState.Full;
+        }
+
+        if (
+            normalizedCyclePos >= newMoonLowerBoundary &&
+            normalizedCyclePos <= newMoonUpperBoundary
+        ) {
+            return MoonPhaseState.New;
+        }
+
+        if (
+            normalizedCyclePos > MoonWindow.HalfLowerWaning &&
+            normalizedCyclePos <= MoonWindow.HalfUpperWaning
+        ) {
+            return MoonPhaseState.HalfWaning;
+        }
+
+        if (
+            normalizedCyclePos > MoonWindow.HalfLowerWaxing &&
+            normalizedCyclePos <= MoonWindow.HalfUpperWaxing
+        ) {
+            return MoonPhaseState.HalfWaxing;
+        }
+
+        return MoonPhaseState.None;
+    }
+
+    public getDaysOffsetFromFullMoon(yearId: number, monthName: string, dayId: number): number {
+        const { fullMoon, leapYear, months } = this.props.calendar;
+        const baseYearDays = Math.floor(this.props.astronomical.daysInYear);
+
+        return (
+            getDayOfYearInCalendar(yearId, monthName, dayId, { months, leapYear }) -
+            fullMoon.day +
+            (yearId - fullMoon.year) * baseYearDays +
+            countLeapYearsBetweenInCalendar(fullMoon.year, yearId, leapYear)
+        );
+    }
+
+    public getMoonCyclePosition(yearId: number, monthName: string, dayId: number): number {
+        const daysOffset = this.getDaysOffsetFromFullMoon(yearId, monthName, dayId);
+        return this.normalizeMoonCyclePosition(daysOffset / this.props.astronomical.moon.period);
+    }
+
+    public getMonthMoonPhases(yearId: number, monthName: string): MonthMoonPhases {
+        const { leapYear, months } = this.props.calendar;
+        const month = getMonthByNameInCalendar(monthName, { months });
+        const monthMoonPhases: MonthMoonPhases = {};
+        const monthDays = getMonthDaysInCalendarYear(yearId, month, leapYear);
+
+        let cyclePos = this.getMoonCyclePosition(yearId, monthName, 1);
+        for (let dayId = 1; dayId <= monthDays; dayId += 1) {
+            const moonPhase = this.classifyMoonPhase(cyclePos);
+
+            if (moonPhase !== MoonPhaseState.None) {
+                monthMoonPhases[dayId] = moonPhase;
+            }
+
+            cyclePos = this.advanceMoonCyclePosition(cyclePos);
+        }
+
+        return monthMoonPhases;
+    }
+
+    public getMonthMoonCycle(yearId: number, monthName: string): MoonCycle {
+        const { astronomical, calendar } = this.props;
+
+        function getFirstFullMoon(targetYearId: number, targetMonthName: string): number {
+            const daysSinceYearStart = getDaysSinceYearStartInCalendar(targetYearId, targetMonthName, {
+                months: calendar.months,
+                leapYear: calendar.leapYear,
+            });
+            const daysSinceFullMoon =
+                (targetYearId - calendar.fullMoon.year) * astronomical.daysInYear -
+                calendar.fullMoon.day +
+                daysSinceYearStart;
+
+            if (daysSinceFullMoon > 0) {
+                return astronomical.moon.period - (daysSinceFullMoon % astronomical.moon.period);
+            }
+
+            return Math.abs((daysSinceFullMoon % astronomical.moon.period) + astronomical.moon.period);
+        }
+
+        const daysInMonth = getMonthByNameInCalendar(monthName, { months: calendar.months }).days;
+        const moonEventLength = astronomical.moon.period / 4;
+
+        const firstFullMoon = getFirstFullMoon(yearId, monthName);
+        let fullMoon = firstFullMoon - astronomical.moon.period;
+        const moonCycle: MoonCycle = [];
+
+        while (fullMoon < daysInMonth) {
+            moonCycle.push([
+                Math.ceil(fullMoon),
+                Math.ceil(fullMoon + moonEventLength),
+                Math.ceil(fullMoon + moonEventLength * 2),
+                Math.ceil(fullMoon + moonEventLength * 3),
+            ]);
+            fullMoon += astronomical.moon.period;
+        }
+
+        return moonCycle;
+    }
 }

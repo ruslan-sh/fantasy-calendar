@@ -9,10 +9,11 @@ Introduce the new moon-state vocabulary and pure helper functions without changi
 
 ### Scope
 - Add moon-state types needed for the daily classification model.
-- Add pure helpers in `src/ts/moon.ts` for:
+- Add moon-specific helpers in `src/ts/moon.ts` for:
   - normalized modulo/wrap behavior
   - advancing `cyclePos` by one day
   - classifying `cyclePos` into `full`, `new`, `half-waning`, `half-waxing`, or `none`
+- It is acceptable for these helpers to be instance methods on a dedicated `Moon` class that accepts the required moon/calendar config in its constructor.
 - Keep shared calendar helpers in `src/ts/logic.ts` when they are not moon-specific.
 - Keep `getMonthMoonCycle` and renderer behavior unchanged.
 
@@ -39,12 +40,13 @@ Status: Done
 Implement O(1) moon phase initialization from the known full-moon anchor, still without changing the renderer.
 
 ### Scope
-- Add helpers in `src/ts/moon.ts` for:
+- Add moon-specific initialization helpers in `src/ts/moon.ts` for:
   - counting leap years between two years with arithmetic
   - computing day-of-year offsets from the full-moon anchor
   - computing `cyclePos` for the start of any target day
+- These may be implemented as instance methods on the `Moon` class instead of standalone exports.
 - Reuse shared calendar/date helpers from `src/ts/logic.ts` as needed.
-- Export these helpers as needed for direct unit verification.
+- Keep visibility minimal, but make the behavior directly unit-testable.
 - Do not replace the current month moon rendering path yet.
 
 ### Why This Task Is Complete
@@ -57,8 +59,8 @@ Implement O(1) moon phase initialization from the known full-moon anchor, still 
 - No renderer changes yet.
 
 ### Validation
-- Verify anchor, leap-year, festival, and far-past/far-future dates through direct helper checks.
-- Cover the exported helpers with focused unit tests.
+- Verify anchor, leap-year, festival, and far-past/far-future dates through direct moon-logic checks.
+- Cover the implemented moon initialization behavior with focused unit tests.
 - Run `npm run build`.
 - Run ESLint for touched TS files.
 
@@ -74,6 +76,7 @@ Generate month-level day markers using the new daily phase model while keeping t
 - Use:
   - direct initialization for the month start
   - incremental progression for each subsequent day
+- This API may be exposed as an instance method on the `Moon` class.
 - Ensure festival months and leap-only festival behavior are represented correctly by the new API.
 - Keep `getMonthMoonCycle` available so the current UI still works unchanged.
 

@@ -8,6 +8,7 @@ Prioritize minimal, focused diffs and preserve the existing architecture unless 
 - `src/index.ts`: app entry point.
 - `src/index.ejs`: HTML template used by webpack.
 - `src/ts/logic.ts`: calendar logic and state transitions.
+- `src/ts/moon.ts`: moon phase calculation logic and moon-specific state helpers.
 - `src/ts/render.ts`: DOM rendering and UI updates.
 - `src/scss/index.scss`: SCSS entry point that composes partials.
 - `src/scss/abstracts/_variables.scss`: shared style variables.
@@ -15,6 +16,8 @@ Prioritize minimal, focused diffs and preserve the existing architecture unless 
 - `src/scss/components/`: component-level styles (for example `_controls.scss`, `_moon.scss`).
 - `src/scss/layout/_calendar.scss`: calendar layout styles.
 - `src/ts/url-utils.ts`: TypeScript URL helper utilities.
+- `tests/moon.test.ts`: moon logic unit tests.
+- `tsconfig.test.json`: TypeScript config used for the unit test build.
 - `webpack.common.js`, `webpack.dev.js`, `webpack.prod.js`: build and development configuration.
 - `dist/`: build output; do not hand-edit generated assets.
 
@@ -25,10 +28,12 @@ Core commands:
 - `npm install`
 - `npm run start`
 - `npm run build`
+- `npm test`
 
 Validation policy for substantive changes:
 
 - Run `npm run build`.
+- Run `npm test` when changing moon logic or adding logic-level behavior that has unit coverage.
 - Run lint checks relevant to touched files:
   - JS/TS changes: run ESLint (for example `npx eslint src`).
   - SCSS changes: run Stylelint (prefer `npm run lint:styles`; equivalent: `npx stylelint "src/**/*.scss"`).

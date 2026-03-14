@@ -1,8 +1,10 @@
 import { props } from "./props";
 import { calculateDate, isLeapYear } from "./logic";
-import { getMonthMoonCycle } from "./moon";
+import { Moon } from "./moon";
 import { writeQueryParams } from "./url-utils";
 import type { CalendarDate, CalendarMonth, MoonCycle } from "./types";
+
+const moon = new Moon(props);
 
 function getRequiredElement<T extends HTMLElement>(id: string): T {
     const element = document.getElementById(id);
@@ -92,7 +94,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
     }
 
     const month = getMonthByName(monthName);
-    const moonCycle = getMonthMoonCycle(yearId, monthName);
+    const moonCycle = moon.getMonthMoonCycle(yearId, monthName);
 
     const container = document.createElement("div");
     container.classList.add("calendar__month");
@@ -153,7 +155,7 @@ function renderFestival(yearId: number, festivalName: string, currentDay: number
         monthHeader.classList.add("calendar__festival-title--current");
     }
 
-    const moonCycle = getMonthMoonCycle(yearId, festivalName);
+    const moonCycle = moon.getMonthMoonCycle(yearId, festivalName);
     renderMoonCycle(moonCycle, 1, monthHeader);
 
     container.appendChild(monthHeader);
