@@ -1,82 +1,113 @@
 import { props } from "./props";
-import type { CalendarDate, CalendarMonth, MoonCycle } from "./types";
+import type { CalendarConfig, CalendarDate, CalendarMonth, LeapYearConfig } from "./types";
 
-function getMonthByName(monthName: string): CalendarMonth {
-    const month = props.calendar.months.find((calendarMonth) => calendarMonth.name === monthName);
+export function getMonthByNameInCalendar(
+    monthName: string,
+    calendar: Pick<CalendarConfig, "months">,
+): CalendarMonth {
+    const month = calendar.months.find((calendarMonth) => calendarMonth.name === monthName);
     if (!month) {
         throw new Error(`Month not found: ${monthName}`);
     }
     return month;
 }
 
-export function isLeapYear(yearId: number): boolean {
-    const { leapYear } = props.calendar;
+export function getMonthByName(monthName: string): CalendarMonth {
+    return getMonthByNameInCalendar(monthName, props.calendar);
+}
+
+export function isLeapYearForCalendar(yearId: number, leapYear: LeapYearConfig): boolean {
     return (yearId - leapYear.first) % leapYear.frequency === 0;
 }
 
-function getMonthDaysInYear(yearId: number, month: CalendarMonth): number {
+export function isLeapYear(yearId: number): boolean {
+    return isLeapYearForCalendar(yearId, props.calendar.leapYear);
+}
+
+export function getMonthDaysInCalendarYear(
+    yearId: number,
+    month: CalendarMonth,
+    leapYear: LeapYearConfig,
+): number {
     if (!month.leapDayMode) {
         return month.days;
     }
 
     if (month.leapDayMode === "leap-only") {
-        return isLeapYear(yearId) ? month.days : 0;
+        return isLeapYearForCalendar(yearId, leapYear) ? month.days : 0;
     }
 
-    return isLeapYear(yearId) ? month.days + 1 : month.days;
+    return isLeapYearForCalendar(yearId, leapYear) ? month.days + 1 : month.days;
 }
 
-function getDaysSinceYearStart(yearId: number, monthName: string): number {
-    const months = props.calendar.months;
-    const monthIndex = months.findIndex((month) => month.name === monthName);
+export function getMonthDaysInYear(yearId: number, month: CalendarMonth): number {
+    return getMonthDaysInCalendarYear(yearId, month, props.calendar.leapYear);
+}
+
+export function getDaysSinceYearStartInCalendar(
+    yearId: number,
+    monthName: string,
+    calendar: Pick<CalendarConfig, "months" | "leapYear">,
+): number {
+    const monthIndex = calendar.months.findIndex((month) => month.name === monthName);
     if (monthIndex < 0) {
         throw new Error(`Month not found: ${monthName}`);
     }
 
-    return months.reduce((accumulator, month, index) => {
+    return calendar.months.reduce((accumulator, month, index) => {
         if (index < monthIndex) {
-            return accumulator + getMonthDaysInYear(yearId, month);
+            return accumulator + getMonthDaysInCalendarYear(yearId, month, calendar.leapYear);
         }
 
         return accumulator;
     }, 0);
 }
 
-export function getMonthMoonCycle(yearId: number, monthName: string): MoonCycle {
-    function getFirstFullMoon(targetYearId: number, targetMonthName: string): number {
-        const { daysInYear, moon } = props.astronomical;
-        const { fullMoon } = props.calendar;
+export function getDaysSinceYearStart(yearId: number, monthName: string): number {
+    return getDaysSinceYearStartInCalendar(yearId, monthName, props.calendar);
+}
 
-        const daysSinceYearStart = getDaysSinceYearStart(targetYearId, targetMonthName);
-        const daysSinceFullMoon =
-            (targetYearId - fullMoon.year) * daysInYear - fullMoon.day + daysSinceYearStart;
-
-        if (daysSinceFullMoon > 0) {
-            return moon.period - (daysSinceFullMoon % moon.period);
-        }
-
-        return Math.abs((daysSinceFullMoon % moon.period) + moon.period);
+export function countLeapYearsBetweenInCalendar(
+    startYearId: number,
+    endYearId: number,
+    leapYear: LeapYearConfig,
+): number {
+    if (startYearId === endYearId) {
+        return 0;
     }
 
-    const { moon } = props.astronomical;
-    const daysInMonth = getMonthByName(monthName).days;
-    const moonEventLength = moon.period / 4;
+    const rangeStart = Math.min(startYearId, endYearId);
+    const rangeEnd = Math.max(startYearId, endYearId);
 
-    const firstFullMoon = getFirstFullMoon(yearId, monthName);
-    let fullMoon = firstFullMoon - moon.period;
-    const moonCycle: MoonCycle = [];
+    const firstLeapYearInRange =
+        leapYear.first +
+        Math.ceil((rangeStart - leapYear.first) / leapYear.frequency) * leapYear.frequency;
 
-    while (fullMoon < daysInMonth) {
-        moonCycle.push([
-            Math.ceil(fullMoon),
-            Math.ceil(fullMoon + moonEventLength),
-            Math.ceil(fullMoon + moonEventLength * 2),
-            Math.ceil(fullMoon + moonEventLength * 3),
-        ]);
-        fullMoon += moon.period;
+    if (firstLeapYearInRange >= rangeEnd) {
+        return 0;
     }
 
-    return moonCycle;
+    const leapYearsInRange =
+        Math.floor((rangeEnd - 1 - firstLeapYearInRange) / leapYear.frequency) + 1;
+
+    return startYearId < endYearId ? leapYearsInRange : -leapYearsInRange;
+}
+
+export function countLeapYearsBetween(startYearId: number, endYearId: number): number {
+    return countLeapYearsBetweenInCalendar(startYearId, endYearId, props.calendar.leapYear);
+}
+
+export function getDayOfYearInCalendar(
+    yearId: number,
+    monthName: string,
+    dayId: number,
+    calendar: Pick<CalendarConfig, "months" | "leapYear">,
+): number {
+    return getDaysSinceYearStartInCalendar(yearId, monthName, calendar) + dayId;
+}
+
+export function getDayOfYear(yearId: number, monthName: string, dayId: number): number {
+    return getDayOfYearInCalendar(yearId, monthName, dayId, props.calendar);
 }
 
 export function calculateDate(currentDate: CalendarDate, daysToAdd: number): CalendarDate {

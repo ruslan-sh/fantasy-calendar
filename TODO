@@ -5,6 +5,8 @@
 - Calendar Properties
 - Store configuration in local storage
 - Print mode
+- Untie code from props, convert everything into classes that takes props as constructor parameter
+- Cover all logic with unit tests
 
 # Done
 

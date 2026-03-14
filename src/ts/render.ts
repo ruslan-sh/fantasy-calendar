@@ -1,7 +1,11 @@
 import { props } from "./props";
-import { calculateDate, getMonthMoonCycle, isLeapYear } from "./logic";
+import { calculateDate, isLeapYear } from "./logic";
+import { Moon } from "./moon";
 import { writeQueryParams } from "./url-utils";
-import type { CalendarDate, CalendarMonth, MoonCycle } from "./types";
+import { MoonPhaseState } from "./types";
+import type { CalendarDate, CalendarMonth, MonthMoonPhases } from "./types";
+
+const moon = new Moon(props);
 
 function getRequiredElement<T extends HTMLElement>(id: string): T {
     const element = document.getElementById(id);
@@ -19,27 +23,22 @@ function getMonthByName(monthName: string): CalendarMonth {
     return month;
 }
 
-function renderMoonCycle(moonCycle: MoonCycle, dayId: number, element: HTMLElement): void {
-    for (const [fullMoon, halfWaning, newMoon, halfWaxing] of moonCycle) {
-        if (dayId === fullMoon) {
+function renderMoonPhase(moonPhases: MonthMoonPhases, dayId: number, element: HTMLElement): void {
+    switch (moonPhases[dayId]) {
+        case MoonPhaseState.Full:
             element.classList.add("calendar__day--moon-full");
             break;
-        }
-
-        if (dayId === halfWaning) {
-            element.classList.add("calendar__day--moon-half-waning");
-            break;
-        }
-
-        if (dayId === newMoon) {
+        case MoonPhaseState.New:
             element.classList.add("calendar__day--moon-new");
             break;
-        }
-
-        if (dayId === halfWaxing) {
+        case MoonPhaseState.HalfWaning:
+            element.classList.add("calendar__day--moon-half-waning");
+            break;
+        case MoonPhaseState.HalfWaxing:
             element.classList.add("calendar__day--moon-half-waxing");
             break;
-        }
+        default:
+            break;
     }
 
     const moonSymbol = document.createElement("span");
@@ -58,7 +57,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
         firstDay: number,
         weekLength: number,
         monthDays: number,
-        moonCycle: MoonCycle
+        moonPhases: MonthMoonPhases,
     ): number {
         const tr = document.createElement("tr");
         for (let dayOffset = 0; dayOffset < weekLength; dayOffset += 1) {
@@ -82,7 +81,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
                 td.classList.add("calendar__day--current");
             }
 
-            renderMoonCycle(moonCycle, dayIndex, td);
+            renderMoonPhase(moonPhases, dayIndex, td);
             tr.appendChild(td);
         }
 
@@ -91,7 +90,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
     }
 
     const month = getMonthByName(monthName);
-    const moonCycle = getMonthMoonCycle(yearId, monthName);
+    const moonPhases = moon.getMonthMoonPhases(yearId, monthName);
 
     const container = document.createElement("div");
     container.classList.add("calendar__month");
@@ -125,7 +124,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
             firstDay,
             props.calendar.days.length,
             month.days,
-            moonCycle
+            moonPhases,
         );
     }
 
@@ -152,8 +151,8 @@ function renderFestival(yearId: number, festivalName: string, currentDay: number
         monthHeader.classList.add("calendar__festival-title--current");
     }
 
-    const moonCycle = getMonthMoonCycle(yearId, festivalName);
-    renderMoonCycle(moonCycle, 1, monthHeader);
+    const moonPhases = moon.getMonthMoonPhases(yearId, festivalName);
+    renderMoonPhase(moonPhases, 1, monthHeader);
 
     container.appendChild(monthHeader);
     return container;

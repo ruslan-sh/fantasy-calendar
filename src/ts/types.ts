@@ -46,14 +46,26 @@ export interface AppProps {
     calendar: CalendarConfig;
 }
 
+export interface MoonProps {
+    astronomical: Pick<AstronomicalConfig, "daysInYear" | "moon">;
+    calendar: Pick<CalendarConfig, "fullMoon" | "leapYear" | "months">;
+}
+
 export interface CalendarDate {
     year: number;
     month: string;
     day: number;
 }
 
-export type MoonCycleEvent = [number, number, number, number];
-export type MoonCycle = MoonCycleEvent[];
+export enum MoonPhaseState {
+    Full = "full",
+    New = "new",
+    HalfWaning = "half-waning",
+    HalfWaxing = "half-waxing",
+    None = "none",
+}
+
+export type MonthMoonPhases = Partial<Record<number, MoonPhaseState>>;
 
 export interface QueryParams {
     year: number | null;
