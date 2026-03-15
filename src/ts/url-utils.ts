@@ -1,6 +1,17 @@
 import type { QueryParams } from "./types";
 
-export function readQueryParams(): QueryParams {
+export function readDateFromUrl(): QueryParams {
+    const hashValue = window.location.hash.slice(1);
+    if (hashValue) {
+        const [yearSegment, monthSegment, daySegment] = hashValue.split("/");
+
+        return {
+            year: yearSegment ? Number(yearSegment) : null,
+            month: monthSegment ? decodeURIComponent(monthSegment) : null,
+            day: daySegment ? Number(daySegment) : null,
+        };
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const yearValue = urlParams.get("y");
     const dayValue = urlParams.get("d");
@@ -12,10 +23,7 @@ export function readQueryParams(): QueryParams {
     };
 }
 
-export function writeQueryParams(year: number, month: string, day: number): void {
-    const urlParams = new URLSearchParams();
-    urlParams.set("y", year.toString());
-    urlParams.set("m", month);
-    urlParams.set("d", day.toString());
-    window.history.pushState({}, "", `${window.location.pathname}?${urlParams.toString()}`);
+export function writeDateToUrl(year: number, month: string, day: number): void {
+    const hashPath = [year.toString(), encodeURIComponent(month), day.toString()].join("/");
+    window.history.pushState({}, "", `${window.location.pathname}#${hashPath}`);
 }

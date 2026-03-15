@@ -1,7 +1,7 @@
 import { props } from "./props";
 import { calculateDate, isLeapYear } from "./logic";
 import { Moon } from "./moon";
-import { writeQueryParams } from "./url-utils";
+import { writeDateToUrl } from "./url-utils";
 import { MoonPhaseState } from "./types";
 import type { CalendarDate, CalendarMonth, MonthMoonPhases } from "./types";
 
@@ -204,7 +204,7 @@ export function renderInput(
         const day = Number(dayInput.value);
 
         renderYear(year, month, day);
-        writeQueryParams(year, month, day);
+        writeDateToUrl(year, month, day);
     }
 
     const container = getRequiredElement<HTMLDivElement>("inputContainer");

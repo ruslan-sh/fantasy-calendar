@@ -1,6 +1,6 @@
 import "./scss/index.scss";
 import { renderInput } from "./ts/render";
-import { readQueryParams } from "./ts/url-utils";
+import { readDateFromUrl } from "./ts/url-utils";
 
-const { year, month, day } = readQueryParams();
+const { year, month, day } = readDateFromUrl();
 renderInput(year, month, day);
