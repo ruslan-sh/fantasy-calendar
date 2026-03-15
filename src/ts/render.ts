@@ -7,12 +7,29 @@ import type { CalendarDate, CalendarMonth, MonthMoonPhases } from "./types";
 
 const moon = new Moon(props);
 
+interface CalendarControls {
+    container: HTMLDivElement;
+    yearInput: HTMLInputElement;
+    monthInput: HTMLSelectElement;
+    dayInput: HTMLInputElement;
+}
+
+let calendarControls: CalendarControls | null = null;
+
 function getRequiredElement<T extends HTMLElement>(id: string): T {
     const element = document.getElementById(id);
     if (!element) {
         throw new Error(`Missing required element: ${id}`);
     }
     return element as T;
+}
+
+function getCalendarControls(): CalendarControls {
+    if (!calendarControls) {
+        throw new Error("Calendar controls have not been rendered");
+    }
+
+    return calendarControls;
 }
 
 function getMonthByName(monthName: string): CalendarMonth {
@@ -46,6 +63,97 @@ function renderMoonPhase(moonPhases: MonthMoonPhases, dayId: number, element: HT
     element.appendChild(moonSymbol);
 }
 
+function setInteractiveDateTarget(
+    element: HTMLElement,
+    yearId: number,
+    monthName: string,
+    dayId: number,
+): void {
+    element.dataset.year = String(yearId);
+    element.dataset.month = monthName;
+    element.dataset.day = String(dayId);
+}
+
+function readInteractiveDateTarget(
+    element: HTMLElement,
+): CalendarDate | null {
+    const { year, month, day } = element.dataset;
+    if (!year || !month || !day) {
+        return null;
+    }
+
+    return {
+        year: Number(year),
+        month,
+        day: Number(day),
+    };
+}
+
+function syncDayInputState(monthName: string): void {
+    const month = getMonthByName(monthName);
+    const { dayInput } = getCalendarControls();
+    dayInput.disabled = Boolean(month.isFestival);
+    if (month.isFestival) {
+        dayInput.value = "1";
+    }
+}
+
+function renderSelectedDate(): void {
+    const { yearInput, monthInput, dayInput } = getCalendarControls();
+
+    const year = Number(yearInput.value);
+    const month = monthInput.value;
+    const day = Number(dayInput.value);
+
+    renderYear(year, month, day);
+    writeDateToUrl(year, month, day);
+}
+
+function selectDate(date: CalendarDate): void {
+    const { yearInput, monthInput, dayInput } = getCalendarControls();
+
+    const currentSelection: CalendarDate = {
+        year: Number(yearInput.value),
+        month: monthInput.value,
+        day: Number(dayInput.value),
+    };
+
+    if (
+        currentSelection.year === date.year &&
+        currentSelection.month === date.month &&
+        currentSelection.day === date.day
+    ) {
+        return;
+    }
+
+    yearInput.value = String(date.year);
+    monthInput.value = date.month;
+    dayInput.value = String(date.day);
+    syncDayInputState(date.month);
+    renderSelectedDate();
+}
+
+export function registerCalendarDateSelection(): void {
+    getRequiredElement<HTMLDivElement>("calendarContainer").onclick = (event: MouseEvent) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+            return;
+        }
+
+        const interactiveDateElement = target.closest<HTMLElement>("[data-year][data-month][data-day]");
+        if (!interactiveDateElement) {
+            return;
+        }
+
+        const date = readInteractiveDateTarget(interactiveDateElement);
+        if (!date) {
+            return;
+        }
+
+        selectDate(date);
+    };
+}
+
 function renderMonth(yearId: number, monthName: string, currentDay: number): HTMLDivElement {
     function calculateFirstDay(): number {
         return 0;
@@ -77,6 +185,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
             dayIndex += 1;
             td.textContent = String(dayIndex);
             td.classList.add("calendar__day");
+            setInteractiveDateTarget(td, yearId, monthName, dayIndex);
             if (dayIndex === currentDay) {
                 td.classList.add("calendar__day--current");
             }
@@ -147,6 +256,7 @@ function renderFestival(yearId: number, festivalName: string, currentDay: number
     const monthHeader = document.createElement("h3");
     monthHeader.classList.add("calendar__festival-title");
     monthHeader.textContent = `${festival.name} Festival`;
+    setInteractiveDateTarget(monthHeader, yearId, festivalName, 1);
     if (currentDay === 1) {
         monthHeader.classList.add("calendar__festival-title--current");
     }
@@ -194,19 +304,6 @@ export function renderInput(
     initialMonth: string | null,
     initialDay: number | null
 ): void {
-    function handleYearRender(): void {
-        const yearInput = getRequiredElement<HTMLInputElement>("yearInput");
-        const monthInput = getRequiredElement<HTMLSelectElement>("monthInput");
-        const dayInput = getRequiredElement<HTMLInputElement>("dayInput");
-
-        const year = Number(yearInput.value);
-        const month = monthInput.value;
-        const day = Number(dayInput.value);
-
-        renderYear(year, month, day);
-        writeDateToUrl(year, month, day);
-    }
-
     const container = getRequiredElement<HTMLDivElement>("inputContainer");
     container.classList.add("calendar-controls");
     container.innerHTML = "";
@@ -230,7 +327,8 @@ export function renderInput(
             .forEach((option) => {
                 option.disabled = !isLeapYear(yearValue);
             });
-        handleYearRender();
+        syncDayInputState(monthInput.value);
+        renderSelectedDate();
     };
 
     const monthInputContainer = document.createElement("div");
@@ -256,13 +354,8 @@ export function renderInput(
     container.appendChild(monthInputContainer);
 
     monthInput.onchange = () => {
-        const month = getMonthByName(monthInput.value);
-        const dayInput = getRequiredElement<HTMLInputElement>("dayInput");
-        dayInput.disabled = Boolean(month.isFestival);
-        if (month.isFestival) {
-            dayInput.value = "1";
-        }
-        handleYearRender();
+        syncDayInputState(monthInput.value);
+        renderSelectedDate();
     };
 
     const dayInputContainer = document.createElement("div");
@@ -276,7 +369,14 @@ export function renderInput(
     dayInputContainer.appendChild(dayInput);
     container.appendChild(dayInputContainer);
 
-    dayInput.onchange = handleYearRender;
+    calendarControls = {
+        container,
+        yearInput,
+        monthInput,
+        dayInput,
+    };
+
+    dayInput.onchange = renderSelectedDate;
 
     const calculatorContainer = document.createElement("div");
     calculatorContainer.classList.add("calendar-controls__group");
@@ -292,18 +392,18 @@ export function renderInput(
     const calculatorButton = document.createElement("button");
     calculatorButton.textContent = "Add";
     calculatorButton.onclick = () => {
-        const currentDayInput = getRequiredElement<HTMLInputElement>("dayInput");
+        const { yearInput, monthInput, dayInput } = getCalendarControls();
         const currentDate: CalendarDate = {
-            year: Number(getRequiredElement<HTMLInputElement>("yearInput").value),
-            month: getRequiredElement<HTMLSelectElement>("monthInput").value,
-            day: Number(currentDayInput.value),
+            year: Number(yearInput.value),
+            month: monthInput.value,
+            day: Number(dayInput.value),
         };
 
         const newDate = calculateDate(currentDate, Number(calculatorInput.value));
-        getRequiredElement<HTMLInputElement>("yearInput").value = String(newDate.year);
-        getRequiredElement<HTMLSelectElement>("monthInput").value = newDate.month;
-        getRequiredElement<HTMLInputElement>("dayInput").value = String(newDate.day);
-        handleYearRender();
+        yearInput.value = String(newDate.year);
+        monthInput.value = newDate.month;
+        dayInput.value = String(newDate.day);
+        renderSelectedDate();
     };
 
     calculatorInputContainer.appendChild(calculatorButton);
@@ -314,9 +414,10 @@ export function renderInput(
     const hideInputButton = document.createElement("span");
     hideInputButton.classList.add("material-icons", "calendar-controls__toggle");
     hideInputButton.onclick = () => {
-        container.classList.toggle("calendar-controls--collapsed");
+        getCalendarControls().container.classList.toggle("calendar-controls--collapsed");
     };
     container.appendChild(hideInputButton);
 
-    handleYearRender();
+    syncDayInputState(monthInput.value);
+    renderSelectedDate();
 }

@@ -20,6 +20,19 @@
   font-style: italic;
 }
 
+.calendar__day,
+.calendar__festival-title {
+  cursor: pointer;
+}
+
+.calendar__day:hover,
+.calendar__day:active,
+.calendar__festival-title:hover,
+.calendar__festival-title:active {
+  box-shadow: inset 0 0 0 1px v.$color-accent;
+  border-radius: v.$radius-sm;
+}
+
 .calendar__festival-title--current {
   border: v.$border-focus;
   border-radius: v.$radius-sm;
