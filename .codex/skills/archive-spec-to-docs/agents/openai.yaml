@@ -1,4 +1,0 @@
-interface:
-  display_name: "Archive Spec to Docs"
-  short_description: "Archive implemented specs into docs"
-  default_prompt: "Use $archive-spec-to-docs to archive an implemented spec and update project docs to reflect the current system behavior."
