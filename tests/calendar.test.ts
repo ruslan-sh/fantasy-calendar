@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { Calendar } from "../src/ts/logic";
-import type { CalendarProps } from "../src/ts/logic";
+import { Calendar } from "../src/ts/calendar";
+import type { CalendarProps } from "../src/ts/calendar";
 
 const leapOnlyCalendarProps: CalendarProps = {
     astronomical: {

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { Calendar } from "../src/ts/logic";
+import { Calendar } from "../src/ts/calendar";
 import { Moon } from "../src/ts/moon";
 import type { CalendarMonth, MoonProps } from "../src/ts/types";
 import { MoonPhaseState } from "../src/ts/types";

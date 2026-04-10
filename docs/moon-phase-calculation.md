@@ -1,7 +1,7 @@
 # Moon Phase Calculation Design
 
 ## Purpose
-This document describes the current moon phase calculation design used by the application. It reflects the implemented behavior in `src/ts/moon.ts`, the shared calendar dependency in `src/ts/logic.ts`, the renderer integration in `src/ts/render.ts`, and the regression coverage in `tests/moon.test.ts`.
+This document describes the current moon phase calculation design used by the application. It reflects the implemented behavior in `src/ts/moon.ts`, the shared calendar dependency in `src/ts/calendar.ts`, the renderer integration in `src/ts/render.ts`, and the regression coverage in `tests/moon.test.ts`.
 
 ## Scope
 - Daily moon phase classification for calendar rendering.
@@ -12,7 +12,7 @@ This document describes the current moon phase calculation design used by the ap
 - `src/ts/moon.ts`
   - Owns moon-specific calculation logic.
   - Exposes the `Moon` class.
-- `src/ts/logic.ts`
+- `src/ts/calendar.ts`
   - Owns shared calendar helpers used by moon logic and general date logic.
 - `src/ts/render.ts`
   - Consumes day-classified moon states and maps them to existing CSS classes.
@@ -155,7 +155,7 @@ Class mapping:
 The existing moon symbol element and SCSS selectors are preserved. Visibility remains controlled by the moon-specific modifier classes.
 
 ## Shared Calendar Dependencies
-The moon module depends on an injected `Calendar` instance from `src/ts/logic.ts`.
+The moon module depends on an injected `Calendar` instance from `src/ts/calendar.ts`.
 
 It uses the following shared instance methods:
 - `getMonthByName(...)`

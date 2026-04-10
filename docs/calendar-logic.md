@@ -1,7 +1,7 @@
 # Calendar Logic Design
 
 ## Purpose
-This document describes the implemented calendar logic surface used by the application. It reflects the `Calendar` class in `src/ts/logic.ts`, its render-layer integration in `src/ts/render.ts`, its use from `src/ts/moon.ts`, and the regression coverage in `tests/calendar.test.ts`.
+This document describes the implemented calendar logic surface used by the application. It reflects the `Calendar` class in `src/ts/calendar.ts`, its render-layer integration in `src/ts/render.ts`, its use from `src/ts/moon.ts`, and the regression coverage in `tests/calendar.test.ts`.
 
 ## Scope
 - Shared calendar calculations for month lookup, leap years, month lengths, day-of-year offsets, and date rollover.
@@ -9,7 +9,7 @@ This document describes the implemented calendar logic surface used by the appli
 - The integration points that consume the shared `Calendar` instance.
 
 ## Module Boundaries
-- `src/ts/logic.ts`
+- `src/ts/calendar.ts`
   - Owns the shared `Calendar` class.
   - Exposes the explicit `CalendarProps` constructor contract.
 - `src/ts/render.ts`

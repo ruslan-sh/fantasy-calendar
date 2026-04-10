@@ -1,5 +1,5 @@
 import { props } from "./props";
-import { Calendar } from "./logic";
+import { Calendar } from "./calendar";
 import { Moon } from "./moon";
 import { writeDateToUrl } from "./url-utils";
 import { MoonPhaseState } from "./types";

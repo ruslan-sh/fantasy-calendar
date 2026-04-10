@@ -1,4 +1,4 @@
-import { Calendar } from "./logic";
+import { Calendar } from "./calendar";
 import { MoonPhaseState } from "./types";
 import type { MonthMoonPhases, MoonProps } from "./types";
 
