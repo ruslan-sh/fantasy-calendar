@@ -180,6 +180,3 @@ The current unit tests cover:
 - Classification is sampled at day start only.
 - Intra-day threshold crossings are intentionally ignored.
 - The renderer still appends the moon symbol element for every day cell, but SCSS keeps it hidden unless a moon-state class is present.
-
-## Current Status
-This design is fully implemented in the current codebase.
