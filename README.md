@@ -6,4 +6,5 @@
 
 Project documentation:
 - `docs/calendar-date-selection.md`
+- `docs/calendar-logic.md`
 - `docs/moon-phase-calculation.md`

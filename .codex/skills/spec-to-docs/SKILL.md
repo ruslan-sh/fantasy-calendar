@@ -7,7 +7,7 @@ description: Update current-state project documentation from an implemented spec
 
 ## Overview
 
-Use this skill when the user wants an implemented spec translated into current-state project documentation. The primary goal is to make docs reflect the shipped behavior; archiving the spec is a cleanup step to keep `specs/` focused on active plans.
+Use this skill when the user wants an implemented spec translated into current-state project documentation. The primary goal is to make docs reflect the shipped behavior; archiving the spec and deleting any sibling `*.tasks.md` tracker are cleanup steps to keep `specs/` focused on active plans.
 
 Before editing, read:
 - [`references/archive-rules.md`](./references/archive-rules.md) for archival location and rewrite rules
@@ -51,6 +51,7 @@ Use the documentation-target guidance in [`references/archive-rules.md`](./refer
 If appropriate, archive the spec according to [`references/archive-rules.md`](./references/archive-rules.md).
 
 Treat archival as cleanup after the documentation is correctly updated, not as the primary goal of the skill.
+If the spec has a sibling `*.tasks.md` file, delete it as part of the same cleanup.
 
 ### 4. Rewrite as current-state documentation
 
@@ -63,6 +64,7 @@ Use the rewrite rules in [`references/archive-rules.md`](./references/archive-ru
 Do not refactor unrelated docs. Limit the change to:
 - the target doc in `docs/`;
 - the archived spec when archival is part of the requested or sensible cleanup;
+- deletion of the sibling `*.tasks.md` file when present;
 - small README link updates if needed.
 
 ### 6. Verify the result
@@ -75,4 +77,5 @@ A good result has these properties:
 - project docs describe the behavior as implemented, not proposed;
 - the documentation is easier to find than the spec;
 - the spec is archived under `specs/archive/` when that cleanup is appropriate;
+- any sibling `*.tasks.md` tracker is removed when the spec is archived;
 - the final summary calls out files changed, behavior impact, and verification performed.

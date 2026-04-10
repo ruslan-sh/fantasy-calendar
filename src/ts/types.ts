@@ -47,8 +47,8 @@ export interface AppProps {
 }
 
 export interface MoonProps {
-    astronomical: Pick<AstronomicalConfig, "daysInYear" | "moon">;
-    calendar: Pick<CalendarConfig, "fullMoon" | "leapYear" | "months">;
+    astronomical: AstronomicalConfig;
+    calendar: CalendarConfig;
 }
 
 export interface CalendarDate {

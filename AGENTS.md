@@ -7,7 +7,7 @@ Prioritize minimal, focused diffs and preserve the existing architecture unless 
 
 - `src/index.ts`: app entry point.
 - `src/index.ejs`: HTML template used by webpack.
-- `src/ts/logic.ts`: calendar logic and state transitions.
+- `src/ts/calendar.ts`: calendar logic and state transitions.
 - `src/ts/moon.ts`: moon phase calculation logic and moon-specific state helpers.
 - `src/ts/render.ts`: DOM rendering and UI updates.
 - `src/scss/index.scss`: SCSS entry point that composes partials.
@@ -33,6 +33,7 @@ Core commands:
 Validation policy for substantive changes:
 
 - Run `npm run build`.
+- In WSL, `npm run build` may hang after webpack finishes when run by the agent. If that happens, use `npx webpack --config webpack.prod.js --stats errors-warnings` as the fallback verification command and note that `webpack compiled successfully`.
 - Run `npm test` when changing moon logic or adding logic-level behavior that has unit coverage.
 - Run lint checks relevant to touched files:
   - JS/TS changes: run ESLint (for example `npx eslint src`).
@@ -45,7 +46,7 @@ Validation policy for substantive changes:
 - Preserve existing style, naming, and module boundaries in touched files.
 - Avoid new dependencies unless they are explicitly required.
 - Do not refactor unrelated code in the same change.
-- Prefer logic-only updates in `src/ts/logic.ts` and UI-only updates in `src/ts/render.ts` / `src/scss/`.
+- Prefer logic-only updates in `src/ts/calendar.ts` and UI-only updates in `src/ts/render.ts` / `src/scss/`.
 
 # Change Workflow
 
