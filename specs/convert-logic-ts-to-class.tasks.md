@@ -41,8 +41,7 @@ Definition of done:
 - Existing moon behavior remains unchanged for current inputs.
 
 ## Task 3: Migrate render-layer callers to a shared `Calendar` instance
-Status: todo
-Note: Partially implemented already. `render.ts` now creates a shared `Calendar` instance and passes it to `Moon`, but render-layer month lookup and remaining calendar reads still need to be migrated to the instance API.
+Status: done
 Summary: Replace render-layer usage of free functions with a shared `Calendar` instance and keep current date navigation and festival rendering behavior intact.
 Scope:
 - Instantiate `Calendar` at the current composition point that keeps the diff minimal, likely in `src/ts/render.ts` unless a slightly higher owner is clearly cleaner.

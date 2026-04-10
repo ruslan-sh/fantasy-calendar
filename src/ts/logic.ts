@@ -3,7 +3,6 @@ import type {
     CalendarConfig,
     CalendarDate,
     CalendarMonth,
-    LeapYearConfig,
 } from "./types";
 
 export interface CalendarProps {
@@ -11,47 +10,32 @@ export interface CalendarProps {
     calendar: CalendarConfig;
 }
 
-function getMonthByName(monthName: string, months: CalendarMonth[]): CalendarMonth {
-    const month = months.find((calendarMonth) => calendarMonth.name === monthName);
-    if (!month) {
-        throw new Error(`Month not found: ${monthName}`);
-    }
-    return month;
-}
-
-function isLeapYearForConfig(yearId: number, leapYear: LeapYearConfig): boolean {
-    return (yearId - leapYear.first) % leapYear.frequency === 0;
-}
-
-function getMonthDaysInYear(
-    yearId: number,
-    month: CalendarMonth,
-    leapYear: LeapYearConfig,
-): number {
-    if (!month.leapDayMode) {
-        return month.days;
-    }
-
-    if (month.leapDayMode === "leap-only") {
-        return isLeapYearForConfig(yearId, leapYear) ? month.days : 0;
-    }
-
-    return isLeapYearForConfig(yearId, leapYear) ? month.days + 1 : month.days;
-}
-
 export class Calendar {
     public constructor(private readonly props: CalendarProps) {}
 
     public getMonthByName(monthName: string): CalendarMonth {
-        return getMonthByName(monthName, this.props.calendar.months);
+        const month = this.props.calendar.months.find((calendarMonth) => calendarMonth.name === monthName);
+        if (!month) {
+            throw new Error(`Month not found: ${monthName}`);
+        }
+        return month;
     }
 
     public isLeapYear(yearId: number): boolean {
-        return isLeapYearForConfig(yearId, this.props.calendar.leapYear);
+        const { leapYear } = this.props.calendar;
+        return (yearId - leapYear.first) % leapYear.frequency === 0;
     }
 
     public getMonthDaysInYear(yearId: number, month: CalendarMonth): number {
-        return getMonthDaysInYear(yearId, month, this.props.calendar.leapYear);
+        if (!month.leapDayMode) {
+            return month.days;
+        }
+
+        if (month.leapDayMode === "leap-only") {
+            return this.isLeapYear(yearId) ? month.days : 0;
+        }
+
+        return this.isLeapYear(yearId) ? month.days + 1 : month.days;
     }
 
     public getDaysSinceYearStart(yearId: number, monthName: string): number {

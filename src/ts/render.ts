@@ -3,7 +3,7 @@ import { Calendar } from "./logic";
 import { Moon } from "./moon";
 import { writeDateToUrl } from "./url-utils";
 import { MoonPhaseState } from "./types";
-import type { CalendarDate, CalendarMonth, MonthMoonPhases } from "./types";
+import type { CalendarDate, MonthMoonPhases } from "./types";
 
 const calendar = new Calendar({
     calendar: props.calendar,
@@ -34,14 +34,6 @@ function getCalendarControls(): CalendarControls {
     }
 
     return calendarControls;
-}
-
-function getMonthByName(monthName: string): CalendarMonth {
-    const month = props.calendar.months.find((calendarMonth) => calendarMonth.name === monthName);
-    if (!month) {
-        throw new Error(`Month not found: ${monthName}`);
-    }
-    return month;
 }
 
 function renderMoonPhase(moonPhases: MonthMoonPhases, dayId: number, element: HTMLElement): void {
@@ -94,7 +86,7 @@ function readInteractiveDateTarget(
 }
 
 function syncDayInputState(monthName: string): void {
-    const month = getMonthByName(monthName);
+    const month = calendar.getMonthByName(monthName);
     const { dayInput } = getCalendarControls();
     dayInput.disabled = Boolean(month.isFestival);
     if (month.isFestival) {
@@ -168,7 +160,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
         dayIndex: number,
         firstDay: number,
         weekLength: number,
-        monthDays: number,
+        daysInMonth: number,
         moonPhases: MonthMoonPhases,
     ): number {
         const tr = document.createElement("tr");
@@ -180,7 +172,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
                 continue;
             }
 
-            if (dayIndex >= monthDays) {
+            if (dayIndex >= daysInMonth) {
                 td.textContent = "";
                 tr.appendChild(td);
                 continue;
@@ -202,7 +194,8 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
         return dayIndex;
     }
 
-    const month = getMonthByName(monthName);
+    const month = calendar.getMonthByName(monthName);
+    const daysInMonth = calendar.getMonthDaysInYear(yearId, month);
     const moonPhases = moon.getMonthMoonPhases(yearId, monthName);
 
     const container = document.createElement("div");
@@ -230,13 +223,13 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
 
     const firstDay = calculateFirstDay();
     let dayIndex = 0;
-    while (dayIndex < month.days) {
+    while (dayIndex < daysInMonth) {
         dayIndex = renderWeek(
             tbody,
             dayIndex,
             firstDay,
             props.calendar.days.length,
-            month.days,
+            daysInMonth,
             moonPhases,
         );
     }
@@ -249,7 +242,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
 }
 
 function renderFestival(yearId: number, festivalName: string, currentDay: number): HTMLDivElement | null {
-    const festival = getMonthByName(festivalName);
+    const festival = calendar.getMonthByName(festivalName);
     if (festival.leapDayMode === "leap-only" && !calendar.isLeapYear(yearId)) {
         return null;
     }
