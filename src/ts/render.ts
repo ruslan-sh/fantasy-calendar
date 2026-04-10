@@ -1,11 +1,15 @@
 import { props } from "./props";
-import { calculateDate, isLeapYear } from "./logic";
+import { Calendar } from "./logic";
 import { Moon } from "./moon";
 import { writeDateToUrl } from "./url-utils";
 import { MoonPhaseState } from "./types";
 import type { CalendarDate, CalendarMonth, MonthMoonPhases } from "./types";
 
-const moon = new Moon(props);
+const calendar = new Calendar({
+    calendar: props.calendar,
+    astronomical: props.astronomical,
+});
+const moon = new Moon(props, calendar);
 
 interface CalendarControls {
     container: HTMLDivElement;
@@ -246,7 +250,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
 
 function renderFestival(yearId: number, festivalName: string, currentDay: number): HTMLDivElement | null {
     const festival = getMonthByName(festivalName);
-    if (festival.leapDayMode === "leap-only" && !isLeapYear(yearId)) {
+    if (festival.leapDayMode === "leap-only" && !calendar.isLeapYear(yearId)) {
         return null;
     }
 
@@ -325,7 +329,7 @@ export function renderInput(
         monthInput
             .querySelectorAll<HTMLOptionElement>(".calendar-controls__month-option--leap-only")
             .forEach((option) => {
-                option.disabled = !isLeapYear(yearValue);
+                option.disabled = !calendar.isLeapYear(yearValue);
             });
         syncDayInputState(monthInput.value);
         renderSelectedDate();
@@ -399,7 +403,7 @@ export function renderInput(
             day: Number(dayInput.value),
         };
 
-        const newDate = calculateDate(currentDate, Number(calculatorInput.value));
+        const newDate = calendar.calculateDate(currentDate, Number(calculatorInput.value));
         yearInput.value = String(newDate.year);
         monthInput.value = newDate.month;
         dayInput.value = String(newDate.day);

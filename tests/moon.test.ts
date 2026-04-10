@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { Calendar } from "../src/ts/logic";
 import { Moon } from "../src/ts/moon";
 import type { CalendarMonth, MoonProps } from "../src/ts/types";
 import { MoonPhaseState } from "../src/ts/types";
@@ -21,6 +22,9 @@ const testMoonProps: MoonProps = {
         },
     },
     calendar: {
+        yearName: "DR",
+        isMonthsWeeksSynced: true,
+        springEquinox: 80,
         leapYear: { first: 0, frequency: 4 },
         fullMoon: { year: 1372, day: 1 },
         months: [
@@ -43,10 +47,23 @@ const testMoonProps: MoonProps = {
             { name: "Feast of the Moon", days: 1, isFestival: true },
             { name: "Nightal", alias: "The Drawing Down", days: 30 },
         ],
+        days: [
+            { name: "First", short: "1st" },
+            { name: "Second", short: "2nd" },
+            { name: "Third", short: "3rd" },
+            { name: "Fourth", short: "4th" },
+            { name: "Fifth", short: "5th" },
+            { name: "Sixth", short: "6th" },
+            { name: "Seventh", short: "7th" },
+            { name: "Eighth", short: "8th" },
+            { name: "Ninth", short: "9th" },
+            { name: "Tenth", short: "10th" },
+        ],
     },
 };
 
-const moon = new Moon(testMoonProps);
+const calendar = new Calendar(testMoonProps);
+const moon = new Moon(testMoonProps, calendar);
 
 function isLeapYear(yearId: number): boolean {
     const { leapYear } = testMoonProps.calendar;

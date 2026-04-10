@@ -1,9 +1,4 @@
-import {
-    countLeapYearsBetweenInCalendar,
-    getDayOfYearInCalendar,
-    getMonthByNameInCalendar,
-    getMonthDaysInCalendarYear,
-} from "./logic";
+import { Calendar } from "./logic";
 import { MoonPhaseState } from "./types";
 import type { MonthMoonPhases, MoonProps } from "./types";
 
@@ -22,7 +17,10 @@ class MoonWindow {
 }
 
 export class Moon {
-    public constructor(private readonly props: MoonProps) {}
+    public constructor(
+        private readonly props: MoonProps,
+        private readonly calendar: Calendar,
+    ) {}
 
     public normalizeMoonCyclePosition(cyclePos: number): number {
         if (cyclePos >= 0 && cyclePos < 1) {
@@ -78,14 +76,14 @@ export class Moon {
     }
 
     public getDaysOffsetFromFullMoon(yearId: number, monthName: string, dayId: number): number {
-        const { fullMoon, leapYear, months } = this.props.calendar;
+        const { fullMoon } = this.props.calendar;
         const baseYearDays = Math.floor(this.props.astronomical.daysInYear);
 
         return (
-            getDayOfYearInCalendar(yearId, monthName, dayId, { months, leapYear }) -
+            this.calendar.getDayOfYear(yearId, monthName, dayId) -
             fullMoon.day +
             (yearId - fullMoon.year) * baseYearDays +
-            countLeapYearsBetweenInCalendar(fullMoon.year, yearId, leapYear)
+            this.calendar.countLeapYearsBetween(fullMoon.year, yearId)
         );
     }
 
@@ -95,10 +93,9 @@ export class Moon {
     }
 
     public getMonthMoonPhases(yearId: number, monthName: string): MonthMoonPhases {
-        const { leapYear, months } = this.props.calendar;
-        const month = getMonthByNameInCalendar(monthName, { months });
+        const month = this.calendar.getMonthByName(monthName);
         const monthMoonPhases: MonthMoonPhases = {};
-        const monthDays = getMonthDaysInCalendarYear(yearId, month, leapYear);
+        const monthDays = this.calendar.getMonthDaysInYear(yearId, month);
 
         let cyclePos = this.getMoonCyclePosition(yearId, monthName, 1);
         for (let dayId = 1; dayId <= monthDays; dayId += 1) {

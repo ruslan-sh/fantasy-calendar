@@ -1,7 +1,7 @@
 # Tasks For Convert `logic.ts` To `Calendar` Class
 
 ## Task 1: Introduce the `Calendar` class API in `logic.ts`
-Status: todo
+Status: done
 Summary: Refactor the logic module so its primary export is a `Calendar` class with an explicit constructor contract for `calendar` and `astronomical` props, while keeping behavior unchanged and the branch buildable.
 Scope:
 - Add a dedicated `CalendarProps` interface using explicit `CalendarConfig` and `AstronomicalConfig` types rather than `Pick<AppProps, ...>`.
@@ -22,7 +22,7 @@ Definition of done:
 - No public free-function compatibility layer is required for later tasks to proceed.
 
 ## Task 2: Migrate `Moon` to consume `Calendar`
-Status: todo
+Status: done
 Summary: Update the moon logic so it depends on an injected `Calendar` instance instead of importing loose helper functions from the calendar logic module.
 Scope:
 - Change `Moon` construction to accept a `Calendar` instance explicitly alongside its existing moon props.
@@ -42,6 +42,7 @@ Definition of done:
 
 ## Task 3: Migrate render-layer callers to a shared `Calendar` instance
 Status: todo
+Note: Partially implemented already. `render.ts` now creates a shared `Calendar` instance and passes it to `Moon`, but render-layer month lookup and remaining calendar reads still need to be migrated to the instance API.
 Summary: Replace render-layer usage of free functions with a shared `Calendar` instance and keep current date navigation and festival rendering behavior intact.
 Scope:
 - Instantiate `Calendar` at the current composition point that keeps the diff minimal, likely in `src/ts/render.ts` unless a slightly higher owner is clearly cleaner.
