@@ -37,6 +37,7 @@ Add a short archival note at the top stating that:
 - the behavior now lives in project documentation.
 
 Remove the active spec file from `specs/`.
+If `specs/<name>.tasks.md` exists beside the active spec, delete that tasks file instead of archiving it.
 
 ## Rewrite Rules
 

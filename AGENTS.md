@@ -33,6 +33,7 @@ Core commands:
 Validation policy for substantive changes:
 
 - Run `npm run build`.
+- In WSL, `npm run build` may hang after webpack finishes when run by the agent. If that happens, use `npx webpack --config webpack.prod.js --stats errors-warnings` as the fallback verification command and note that `webpack compiled successfully`.
 - Run `npm test` when changing moon logic or adding logic-level behavior that has unit coverage.
 - Run lint checks relevant to touched files:
   - JS/TS changes: run ESLint (for example `npx eslint src`).

@@ -1,3 +1,5 @@
+# Archived on 2026-04-09 after implementation. Current behavior now lives in `docs/calendar-logic.md` and related project documentation.
+
 # Convert `logic.ts` To `Calendar` Class
 
 ## Summary

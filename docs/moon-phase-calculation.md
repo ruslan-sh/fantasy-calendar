@@ -1,7 +1,7 @@
 # Moon Phase Calculation Design
 
 ## Purpose
-This document describes the current moon phase calculation design used by the application. It reflects the implemented behavior in `src/ts/moon.ts`, the renderer integration in `src/ts/render.ts`, and the regression coverage in `tests/moon.test.ts`.
+This document describes the current moon phase calculation design used by the application. It reflects the implemented behavior in `src/ts/moon.ts`, the shared calendar dependency in `src/ts/logic.ts`, the renderer integration in `src/ts/render.ts`, and the regression coverage in `tests/moon.test.ts`.
 
 ## Scope
 - Daily moon phase classification for calendar rendering.
@@ -155,13 +155,15 @@ Class mapping:
 The existing moon symbol element and SCSS selectors are preserved. Visibility remains controlled by the moon-specific modifier classes.
 
 ## Shared Calendar Dependencies
-The moon module depends on the following shared helpers in `src/ts/logic.ts`:
-- `getMonthByNameInCalendar`
-- `getMonthDaysInCalendarYear`
-- `getDayOfYearInCalendar`
-- `countLeapYearsBetweenInCalendar`
+The moon module depends on an injected `Calendar` instance from `src/ts/logic.ts`.
 
-This keeps month/leap-year rules centralized while keeping moon-specific behavior isolated in `src/ts/moon.ts`.
+It uses the following shared instance methods:
+- `getMonthByName(...)`
+- `getMonthDaysInYear(...)`
+- `getDayOfYear(...)`
+- `countLeapYearsBetween(...)`
+
+This keeps month and leap-year rules centralized while keeping moon-specific behavior isolated in `src/ts/moon.ts`.
 
 ## Validation Coverage
 The current unit tests cover:
